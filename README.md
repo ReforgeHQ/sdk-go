@@ -52,8 +52,22 @@ func main() {
 
 - [API Reference](https://pkg.go.dev/github.com/ReforgeHQ/sdk-go)
 
-## Publishing 
+## Publishing
 
+### Automated Release Process
+
+1) **On feature branch**: Run `./scripts/prepare-release.sh v1.0.0`
+   - Updates `internal/version.go` with new version
+   - Commits the version bump
+
+2) **Create PR** and merge to main
+
+3) **Automatic**: GitHub Actions will detect version change and:
+   - Create git tag (e.g., `v1.0.0`)
+   - Create GitHub release
+   - Make version available: `go get github.com/ReforgeHQ/sdk-go@v1.0.0`
+
+### Manual Process (if needed)
 1) Bump version in internal/version.go (this is the version header clients send)
 2) Commit that change on a branch and merge into main
 3) git tag with the new version number and push that to origin 
