@@ -6,10 +6,10 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/mocks"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/testutils"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/mocks"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/testutils"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 type MockRandomer struct {

@@ -3,8 +3,8 @@ package stores
 import (
 	"fmt"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal"
-	opts "github.com/prefab-cloud/prefab-cloud-go/pkg/internal/options"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal"
+	opts "github.com/ReforgeHQ/sdk-go/pkg/internal/options"
 )
 
 func BuildConfigStore(options opts.Options, source opts.ConfigSource, apiSourceFinishedLoading func()) (internal.ConfigStoreGetter, bool, error) {

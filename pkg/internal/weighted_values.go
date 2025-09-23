@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 type WeightedValueResolver struct {

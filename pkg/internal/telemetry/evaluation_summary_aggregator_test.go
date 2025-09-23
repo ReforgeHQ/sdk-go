@@ -3,11 +3,11 @@ package telemetry_test
 import (
 	"testing"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal"
-	integrationtestsupport "github.com/prefab-cloud/prefab-cloud-go/pkg/internal/integration_test_support"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/telemetry"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/testutils"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal"
+	integrationtestsupport "github.com/ReforgeHQ/sdk-go/pkg/internal/integration_test_support"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/telemetry"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/testutils"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 func TestEvaluationSummaryAggregator_Record(t *testing.T) {

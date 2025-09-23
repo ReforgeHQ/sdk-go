@@ -5,10 +5,10 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	prefab "github.com/prefab-cloud/prefab-cloud-go/pkg"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/contexts"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/telemetry"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	prefab "github.com/ReforgeHQ/sdk-go/pkg"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/contexts"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/telemetry"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 type TelemetryTestCaseYaml struct {

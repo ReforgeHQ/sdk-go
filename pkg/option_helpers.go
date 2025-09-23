@@ -3,7 +3,7 @@ package prefab
 import (
 	"time"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/options"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/options"
 )
 
 // Option is a function that modifies the options for the prefab client.

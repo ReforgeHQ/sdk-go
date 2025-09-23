@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/protobuf/proto"
 
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 func StartTestServer() (*[]*http.Request, *httptest.Server) {

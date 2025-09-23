@@ -3,8 +3,8 @@ package telemetry
 import (
 	"sync"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/contexts"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/contexts"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 type ContextShapeAggregator struct {

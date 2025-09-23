@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/options"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/options"
 )
 
 func TestGetDefaultConfigSources(t *testing.T) {

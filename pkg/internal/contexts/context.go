@@ -4,8 +4,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/utils"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/utils"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 type NamedContext struct {

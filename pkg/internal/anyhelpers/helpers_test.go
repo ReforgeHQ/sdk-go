@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/anyhelpers"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/anyhelpers"
 )
 
 func TestDetectAndReturnStringListIfPresent(t *testing.T) {

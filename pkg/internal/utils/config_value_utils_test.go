@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/utils"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/utils"
 
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 func TestExtractDurationValue(t *testing.T) {

@@ -12,9 +12,9 @@ import (
 
 	durationParser "github.com/sosodev/duration"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/anyhelpers"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/anyhelpers"
 
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 // Create switches on the type of the any value passed in - will return the prefabConfigValue of a matching

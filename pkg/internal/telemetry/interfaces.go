@@ -1,8 +1,8 @@
 package telemetry
 
 import (
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/options"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/options"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 type Aggregator interface {

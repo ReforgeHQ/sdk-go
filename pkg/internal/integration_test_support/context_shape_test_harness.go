@@ -1,8 +1,8 @@
 package integrationtestsupport
 
 import (
-	prefab "github.com/prefab-cloud/prefab-cloud-go/pkg"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	prefab "github.com/ReforgeHQ/sdk-go/pkg"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 type expectedContextShapeData struct {

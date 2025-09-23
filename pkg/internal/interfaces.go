@@ -1,6 +1,6 @@
 package internal
 
-import prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+import prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 
 type ConfigParser interface {
 	Parse(data []byte) ([]*prefabProto.Config, int64, error)

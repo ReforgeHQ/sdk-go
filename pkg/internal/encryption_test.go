@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal"
 )
 
 type EncryptionTestSuite struct {

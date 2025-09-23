@@ -7,8 +7,8 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	prefabInternalProto "github.com/prefab-cloud/prefab-cloud-go/internal-proto"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	prefabInternalProto "github.com/ReforgeHQ/sdk-go/internal-proto"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 type ConfigDumpConfigStore struct {

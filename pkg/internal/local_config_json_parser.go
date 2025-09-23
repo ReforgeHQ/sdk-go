@@ -3,7 +3,7 @@ package internal
 import (
 	"google.golang.org/protobuf/encoding/protojson"
 
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 type LocalConfigJSONParser struct{}

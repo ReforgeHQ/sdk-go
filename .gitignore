@@ -19,3 +19,9 @@
 
 # Go workspace file
 go.work
+
+# IDE directories
+.idea/
+
+# Claude Code directories
+.claude/

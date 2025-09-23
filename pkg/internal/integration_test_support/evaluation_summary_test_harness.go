@@ -1,9 +1,9 @@
 package integrationtestsupport
 
 import (
-	prefab "github.com/prefab-cloud/prefab-cloud-go/pkg"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/contexts"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	prefab "github.com/ReforgeHQ/sdk-go/pkg"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/contexts"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 type ExpectedEvaluationSummaryData struct {

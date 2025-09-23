@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/options"
-	sse "github.com/prefab-cloud/prefab-cloud-go/pkg/internal/sse"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/options"
+	sse "github.com/ReforgeHQ/sdk-go/pkg/internal/sse"
 )
 
 func TestBuildSSEClient(t *testing.T) {

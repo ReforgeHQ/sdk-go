@@ -1,7 +1,7 @@
 package integrationtestsupport
 
 import (
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/contexts"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/contexts"
 )
 
 type ClientOverridesYaml struct {

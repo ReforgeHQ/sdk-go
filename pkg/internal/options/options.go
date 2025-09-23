@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/contexts"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/contexts"
 )
 
 type OnInitializationFailure int

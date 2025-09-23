@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	prefab "github.com/prefab-cloud/prefab-cloud-go/pkg"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/options"
+	prefab "github.com/ReforgeHQ/sdk-go/pkg"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/options"
 )
 
 func TestWithConfig(t *testing.T) {

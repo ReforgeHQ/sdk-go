@@ -7,10 +7,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	prefab "github.com/prefab-cloud/prefab-cloud-go/pkg"
-	integrationtestsupport "github.com/prefab-cloud/prefab-cloud-go/pkg/internal/integration_test_support"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/telemetry"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	prefab "github.com/ReforgeHQ/sdk-go/pkg"
+	integrationtestsupport "github.com/ReforgeHQ/sdk-go/pkg/internal/integration_test_support"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/telemetry"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 func comparableExampleContext(ctx *prefabProto.ContextSet) []string {

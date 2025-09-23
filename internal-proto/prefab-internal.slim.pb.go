@@ -7,7 +7,7 @@
 package prefab_internal_slim
 
 import (
-	proto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	proto "github.com/ReforgeHQ/sdk-go/proto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"

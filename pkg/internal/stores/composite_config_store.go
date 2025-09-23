@@ -1,8 +1,8 @@
 package stores
 
 import (
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 // CompositeConfigStore is a config store that composes multiple config stores.

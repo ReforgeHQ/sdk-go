@@ -3,11 +3,11 @@ package options_test
 import (
 	"testing"
 
-	prefab "github.com/prefab-cloud/prefab-cloud-go/pkg"
+	prefab "github.com/ReforgeHQ/sdk-go/pkg"
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/options"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/options"
 )
 
 func TestGetDefaultOptions(t *testing.T) {

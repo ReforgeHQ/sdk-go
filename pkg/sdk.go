@@ -8,13 +8,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/contexts"
-	optionsPkg "github.com/prefab-cloud/prefab-cloud-go/pkg/internal/options"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/stores"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/telemetry"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/utils"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/contexts"
+	optionsPkg "github.com/ReforgeHQ/sdk-go/pkg/internal/options"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/stores"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/telemetry"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/utils"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 // ConfigMatch represents a match between a config/flag key and a context. It

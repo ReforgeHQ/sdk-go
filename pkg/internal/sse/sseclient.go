@@ -11,9 +11,9 @@ import (
 	sse "github.com/r3labs/sse/v2"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/options"
-	prefabProto "github.com/prefab-cloud/prefab-cloud-go/proto"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/options"
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
 var subdomainRegex = regexp.MustCompile(`(belt|suspenders)\.`)

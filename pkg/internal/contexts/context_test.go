@@ -7,10 +7,10 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/contexts"
-	"github.com/prefab-cloud/prefab-cloud-go/pkg/internal/testutils"
-	"github.com/prefab-cloud/prefab-cloud-go/proto"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/contexts"
+	"github.com/ReforgeHQ/sdk-go/pkg/internal/testutils"
+	"github.com/ReforgeHQ/sdk-go/proto"
 )
 
 type ContextTestSuite struct {
