@@ -1,4 +1,4 @@
-module github.com/prefab-cloud/prefab-cloud-go
+module github.com/ReforgeHQ/sdk-go
 
 go 1.23.0
 

@@ -1,11 +1,11 @@
-# prefab-cloud-go
+# sdk-go
 
-Go Client for Prefab Feature Flags, Dynamic log levels, and Config as a Service: https://www.prefab.cloud
+Go SDK for Reforge Feature Flags and Config as a Service: https://www.reforge.com
 
 ## Installation
 
 ```bash
-go get github.com/prefab-cloud/prefab-cloud-go@latest
+go get github.com/ReforgeHQ/sdk-go@latest
 ```
 
 ## Basic example
@@ -18,23 +18,23 @@ import (
 	"log"
 	"os"
 
-	prefab "github.com/prefab-cloud/prefab-cloud-go/pkg"
+	reforge "github.com/ReforgeHQ/sdk-go"
 )
 
 func main() {
-	apiKey, exists := os.LookupEnv("PREFAB_API_KEY")
+	sdkKey, exists := os.LookupEnv("REFORGE_SDK_KEY")
 
 	if !exists {
-		log.Fatal("API Key not found")
+		log.Fatal("SDK Key not found")
 	}
 
-	client, err := prefab.NewClient(prefab.WithAPIKey(apiKey))
+	client, err := reforge.NewSdk(reforge.WithSdkKey(sdkKey))
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	val, ok, err := client.GetStringValue("my.string.config", prefab.ContextSet{})
+	val, ok, err := client.GetStringValue("my.string.config", *reforge.NewContextSet())
 
 	if err != nil {
 		log.Fatal(err)
@@ -50,15 +50,24 @@ func main() {
 
 ## Documentation
 
-- [API Reference](https://pkg.go.dev/github.com/prefab-cloud/prefab-cloud-go/pkg)
+- [API Reference](https://pkg.go.dev/github.com/ReforgeHQ/sdk-go)
 
-## Notable pending features
+## Publishing
 
-- Telemetry
+### Automated Release Process
 
+1) **On feature branch**: Run `./scripts/prepare-release.sh v1.0.0`
+   - Updates `internal/version.go` with new version
+   - Commits the version bump
 
-## Publishing 
+2) **Create PR** and merge to main
 
-1) Bump version in pkg/internal/version.go (this is the version header clients send)
+3) **Automatic**: GitHub Actions will detect version change and:
+   - Create git tag (e.g., `v1.0.0`)
+   - Create GitHub release
+   - Make version available: `go get github.com/ReforgeHQ/sdk-go@v1.0.0`
+
+### Manual Process (if needed)
+1) Bump version in internal/version.go (this is the version header clients send)
 2) Commit that change on a branch and merge into main
 3) git tag with the new version number and push that to origin 

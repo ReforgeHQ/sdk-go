@@ -19,3 +19,12 @@
 
 # Go workspace file
 go.work
+
+# IDE directories
+.idea/
+
+# Claude Code directories
+.claude/
+
+# Environment files with sensitive keys
+.envrc

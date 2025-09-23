@@ -1,6 +1,6 @@
 [submodule "proto-sources"]
 	path = proto-source
 	url = https://github.com/prefab-cloud/prefab-cloud.git
-[submodule "pkg/internal/testdata/prefab-cloud-integration-test-data"]
-	path = pkg/internal/testdata/prefab-cloud-integration-test-data
-	url = git@github.com:prefab-cloud/prefab-cloud-integration-test-data.git
+[submodule "pkg/internal/testdata/shared-integration-test-data"]
+	path = internal/testdata/shared-integration-test-data
+	url = git@github.com:ReforgeHQ/integration-test-data.git
