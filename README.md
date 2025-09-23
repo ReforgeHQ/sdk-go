@@ -18,7 +18,7 @@ import (
 	"log"
 	"os"
 
-	reforge "github.com/ReforgeHQ/sdk-go/pkg"
+	reforge "github.com/ReforgeHQ/sdk-go"
 )
 
 func main() {
@@ -50,10 +50,10 @@ func main() {
 
 ## Documentation
 
-- [API Reference](https://pkg.go.dev/github.com/ReforgeHQ/sdk-go/pkg)
+- [API Reference](https://pkg.go.dev/github.com/ReforgeHQ/sdk-go)
 
 ## Publishing 
 
-1) Bump version in pkg/internal/version.go (this is the version header clients send)
+1) Bump version in internal/version.go (this is the version header clients send)
 2) Commit that change on a branch and merge into main
 3) git tag with the new version number and push that to origin 
