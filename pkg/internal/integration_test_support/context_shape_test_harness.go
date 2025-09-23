@@ -1,7 +1,7 @@
 package integrationtestsupport
 
 import (
-	prefab "github.com/ReforgeHQ/sdk-go/pkg"
+	reforge "github.com/ReforgeHQ/sdk-go/pkg"
 	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 

@@ -3,7 +3,7 @@ package options_test
 import (
 	"testing"
 
-	prefab "github.com/ReforgeHQ/sdk-go/pkg"
+	reforge "github.com/ReforgeHQ/sdk-go/pkg"
 
 	"github.com/stretchr/testify/assert"
 

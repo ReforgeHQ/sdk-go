@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	prefab "github.com/ReforgeHQ/sdk-go/pkg"
+	reforge "github.com/ReforgeHQ/sdk-go/pkg"
 	integrationtestsupport "github.com/ReforgeHQ/sdk-go/pkg/internal/integration_test_support"
 	"github.com/ReforgeHQ/sdk-go/pkg/internal/telemetry"
 	prefabProto "github.com/ReforgeHQ/sdk-go/proto"

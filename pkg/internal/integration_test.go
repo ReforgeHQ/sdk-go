@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	prefab "github.com/ReforgeHQ/sdk-go/pkg"
+	reforge "github.com/ReforgeHQ/sdk-go/pkg"
 	"github.com/ReforgeHQ/sdk-go/pkg/internal/anyhelpers"
 	"github.com/ReforgeHQ/sdk-go/pkg/internal/contexts"
 	integrationtestsupport "github.com/ReforgeHQ/sdk-go/pkg/internal/integration_test_support"

@@ -5,7 +5,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	prefab "github.com/ReforgeHQ/sdk-go/pkg"
+	reforge "github.com/ReforgeHQ/sdk-go/pkg"
 	"github.com/ReforgeHQ/sdk-go/pkg/internal/contexts"
 	"github.com/ReforgeHQ/sdk-go/pkg/internal/telemetry"
 	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
