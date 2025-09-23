@@ -30,32 +30,32 @@ func TestWithConfig(t *testing.T) {
 
 	require.NoError(t, err)
 
-	str, ok, err := client.GetStringValue("string.key", reforge.ContextSet{})
+	str, ok, err := client.GetStringValue("string.key", *reforge.NewContextSet())
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, "value", str)
 
-	i, ok, err := client.GetIntValue("int.key", reforge.ContextSet{})
+	i, ok, err := client.GetIntValue("int.key", *reforge.NewContextSet())
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, int64(42), i)
 
-	b, ok, err := client.GetBoolValue("bool.key", reforge.ContextSet{})
+	b, ok, err := client.GetBoolValue("bool.key", *reforge.NewContextSet())
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.True(t, b)
 
-	f, ok, err := client.GetFloatValue("float.key", reforge.ContextSet{})
+	f, ok, err := client.GetFloatValue("float.key", *reforge.NewContextSet())
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.InDelta(t, 3.14, f, 0.0001)
 
-	slice, ok, err := client.GetStringSliceValue("slice.key", reforge.ContextSet{})
+	slice, ok, err := client.GetStringSliceValue("slice.key", *reforge.NewContextSet())
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, []string{"a", "b", "c"}, slice)
 
-	json, ok, err := client.GetJSONValue("json.key", reforge.ContextSet{})
+	json, ok, err := client.GetJSONValue("json.key", *reforge.NewContextSet())
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, map[string]interface{}{"nested": "value"}, json)
@@ -91,12 +91,12 @@ func TestWithAJSONConfigDump(t *testing.T) {
 	client, err := reforge.NewSdk(reforge.WithContextTelemetryMode(options.ContextTelemetryModes.None))
 	require.NoError(t, err)
 
-	str, ok, err := client.GetStringValue("my.test.string", reforge.ContextSet{})
+	str, ok, err := client.GetStringValue("my.test.string", *reforge.NewContextSet())
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, "hello world", str)
 
-	boolean, ok, err := client.GetBoolValue("flag.list.environments", reforge.ContextSet{})
+	boolean, ok, err := client.GetBoolValue("flag.list.environments", *reforge.NewContextSet())
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.False(t, boolean)
@@ -112,13 +112,13 @@ func TestWithAJSONConfigDump(t *testing.T) {
 	assert.True(t, boolean)
 
 	// Same thing as above, but with client.WithContext
-	boolean, ok, err = client.WithContext(contextSet).GetBoolValue("flag.list.environments", reforge.ContextSet{})
+	boolean, ok, err = client.WithContext(contextSet).GetBoolValue("flag.list.environments", *reforge.NewContextSet())
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.True(t, boolean)
 
 	// This one is deleted
-	_, ok, err = client.GetLogLevelStringValue("log-level", reforge.ContextSet{})
+	_, ok, err = client.GetLogLevelStringValue("log-level", *reforge.NewContextSet())
 	require.ErrorContains(t, err, "config did not produce a result and no default is specified")
 	assert.False(t, ok)
 }

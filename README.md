@@ -1,11 +1,11 @@
 # sdk-go
 
-Go SDK for Reforge Feature Flags, Dynamic log levels, and Config as a Service: https://www.reforge.com
+Go SDK for Reforge Feature Flags and Config as a Service: https://www.reforge.com
 
 ## Installation
 
 ```bash
-go get github.com/prefab-cloud/prefab-cloud-go@latest
+go get github.com/ReforgeHQ/sdk-go@latest
 ```
 
 ## Basic example
@@ -34,7 +34,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	val, ok, err := client.GetStringValue("my.string.config", reforge.ContextSet{})
+	val, ok, err := client.GetStringValue("my.string.config", *reforge.NewContextSet())
 
 	if err != nil {
 		log.Fatal(err)
@@ -50,7 +50,7 @@ func main() {
 
 ## Documentation
 
-- [API Reference](https://pkg.go.dev/github.com/prefab-cloud/prefab-cloud-go/pkg)
+- [API Reference](https://pkg.go.dev/github.com/ReforgeHQ/sdk-go/pkg)
 
 ## Notable pending features
 
