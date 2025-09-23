@@ -62,7 +62,7 @@ func (c *HTTPClient) LoadFromURI(uri string, sdkKey string, offset int64) (*pref
 	}
 
 	req.SetBasicAuth("1", sdkKey)
-	req.Header.Add("X-PrefabCloud-Client-Version", ClientVersionHeader)
+	req.Header.Add("X-Reforge-SDK-Version", ClientVersionHeader)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

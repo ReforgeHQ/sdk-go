@@ -23,7 +23,7 @@ func TestBuildSSEClient(t *testing.T) {
 
 	assert.Equal(t, map[string]string{
 		"Authorization":                "Basic YXV0aHVzZXI6ZG9lcy1ub3QtbWF0dGVy",
-		"X-PrefabCloud-Client-Version": internal.ClientVersionHeader,
+		"X-Reforge-SDK-Version": internal.ClientVersionHeader,
 		"Accept":                       "text/event-stream",
 	}, client.Headers)
 }

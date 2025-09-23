@@ -35,7 +35,7 @@ func BuildSSEClient(options options.Options) (*sse.Client, error) {
 	client := sse.NewClient(url)
 	client.Headers = map[string]string{
 		"Authorization":                "Basic " + authString,
-		"X-PrefabCloud-Client-Version": internal.ClientVersionHeader,
+		"X-Reforge-SDK-Version": internal.ClientVersionHeader,
 		"Accept":                       "text/event-stream",
 	}
 

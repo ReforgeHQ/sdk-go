@@ -52,11 +52,6 @@ func main() {
 
 - [API Reference](https://pkg.go.dev/github.com/ReforgeHQ/sdk-go/pkg)
 
-## Notable pending features
-
-- Telemetry
-
-
 ## Publishing 
 
 1) Bump version in pkg/internal/version.go (this is the version header clients send)

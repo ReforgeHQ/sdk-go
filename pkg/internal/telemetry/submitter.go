@@ -181,7 +181,7 @@ func (ts *Submitter) Submit(waitOnQueueToDrain bool) error {
 
 	req.Header.Set("Content-Type", "application/x-protobuf")
 	req.Header.Set("Accept", "application/x-protobuf")
-	req.Header.Set("X-PrefabCloud-Client-Version", internal.ClientVersionHeader)
+	req.Header.Set("X-Reforge-SDK-Version", internal.ClientVersionHeader)
 
 	encodedAuth := base64.StdEncoding.EncodeToString([]byte("authuser:" + ts.sdkKey))
 	req.Header.Set("Authorization", "Basic "+encodedAuth)
