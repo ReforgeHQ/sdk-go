@@ -1,25 +1,27 @@
 package internal
 
-import prefabProto "github.com/ReforgeHQ/sdk-go/proto"
+import (
+	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
+)
 
 type ConfigParser interface {
 	Parse(data []byte) ([]*prefabProto.Config, int64, error)
 }
 
-type ContextValueGetter interface {
+// Re-export the public interfaces for internal use
+type ContextValueGetter = interface {
 	GetContextValue(propertyName string) (value interface{}, valueExists bool)
 }
 
-// TODO: add a `freshen` or similar method
-type ConfigStoreGetter interface {
+type ProjectEnvIDSupplier = interface {
+	GetProjectEnvID() int64
+}
+
+type ConfigStoreGetter = interface {
 	GetConfig(key string) (config *prefabProto.Config, exists bool)
 	Keys() []string
 	ContextValueGetter
 	ProjectEnvIDSupplier
-}
-
-type ProjectEnvIDSupplier interface {
-	GetProjectEnvID() int64
 }
 
 type ConfigEvaluator interface {

@@ -50,6 +50,7 @@ type Options struct {
 	SdkKey                       string
 	APIURLs                      []string
 	Sources                      []ConfigSource
+	CustomStores                 []interface{} // ConfigStoreGetter implementations
 	EnvironmentNames             []string
 	ProjectEnvID                 int64
 	InitializationTimeoutSeconds float64

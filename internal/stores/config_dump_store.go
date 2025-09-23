@@ -3,11 +3,7 @@ package stores
 import (
 	"errors"
 	"fmt"
-	"os"
 
-	"google.golang.org/protobuf/proto"
-
-	prefabInternalProto "github.com/ReforgeHQ/sdk-go/internal-proto"
 	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
@@ -32,28 +28,9 @@ func NewConfigDumpConfigStore(path string, projectEnvID int64) (*ConfigDumpConfi
 }
 
 func configDumpFileToConfigMap(path string) (map[string]*prefabProto.Config, error) {
-	configMap := make(map[string]*prefabProto.Config)
-
-	var configDump prefabInternalProto.ConfigDump
-
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("error reading config dump file %s: %w", path, err)
-	}
-
-	err = proto.Unmarshal(data, &configDump)
-	if err != nil {
-		return nil, fmt.Errorf("error unmarshalling config dump file %s: %w", path, err)
-	}
-
-	for _, wrapper := range configDump.GetWrappers() {
-		if !wrapper.GetDeleted() {
-			config := wrapper.GetConfig()
-			configMap[config.GetKey()] = config
-		}
-	}
-
-	return configMap, nil
+	// NOTE: This is a placeholder - dump store functionality moved to api-delivery-service
+	// This will be removed in a future version
+	return nil, fmt.Errorf("config dump functionality has moved to api-delivery-service")
 }
 
 func (s *ConfigDumpConfigStore) GetConfig(key string) (*prefabProto.Config, bool) {

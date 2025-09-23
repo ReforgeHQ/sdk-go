@@ -193,3 +193,23 @@ func WithAllTelemetryDisabled() Option {
 		return nil
 	}
 }
+
+// WithCustomStore adds a custom config store to the SDK.
+// The store must implement the ConfigStoreGetter interface.
+// Custom stores are checked first, before other config sources.
+//
+// Example:
+//
+//	type MyConfigStore struct{}
+//	func (s *MyConfigStore) GetConfig(key string) (*prefabProto.Config, bool) { ... }
+//	func (s *MyConfigStore) Keys() []string { ... }
+//	func (s *MyConfigStore) GetContextValue(propertyName string) (interface{}, bool) { ... }
+//	func (s *MyConfigStore) GetProjectEnvID() int64 { ... }
+//
+//	client, err := reforge.NewSdk(reforge.WithCustomStore(&MyConfigStore{}))
+func WithCustomStore(store ConfigStoreGetter) Option {
+	return func(o *options.Options) error {
+		o.CustomStores = append(o.CustomStores, store)
+		return nil
+	}
+}

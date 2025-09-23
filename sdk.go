@@ -100,6 +100,13 @@ func NewSdk(opts ...Option) (*Client, error) {
 
 	var configStores []internal.ConfigStoreGetter
 
+	// Add custom stores first (they take precedence)
+	for _, customStore := range options.CustomStores {
+		if store, ok := customStore.(ConfigStoreGetter); ok {
+			configStores = append(configStores, store)
+		}
+	}
+
 	apiSourceFinishedLoading := func() {
 		client.closeInitializationCompleteOnce.Do(func() {
 			close(client.initializationComplete)
@@ -121,8 +128,12 @@ func NewSdk(opts ...Option) (*Client, error) {
 		configStores = append(configStores, configStore)
 	}
 
-	if (len(options.Sources) > 1 || options.Sources[0].Raw != optionsPkg.MemoryStoreKey) && len(options.Configs) > 0 {
+	if (len(options.Sources) > 1 || (len(options.Sources) == 1 && options.Sources[0].Raw != optionsPkg.MemoryStoreKey)) && len(options.Configs) > 0 {
 		return nil, errors.New("cannot use WithConfigs with other sources")
+	}
+
+	if len(options.CustomStores) > 0 && len(options.Configs) > 0 {
+		return nil, errors.New("cannot use WithConfigs with custom stores")
 	}
 
 	configStore := stores.BuildCompositeConfigStore(configStores...)
