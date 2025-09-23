@@ -11,8 +11,8 @@ import (
 )
 
 func TestGetDefaultOptions(t *testing.T) {
-	// When ENV var PREFAB_API_URL_OVERRIDE is not set we use the default API URL.
-	t.Setenv("PREFAB_API_URL_OVERRIDE", "")
+	// When ENV var REFORGE_API_URL_OVERRIDE is not set we use the default API URL.
+	t.Setenv("REFORGE_API_URL_OVERRIDE", "")
 
 	o := options.GetDefaultOptions()
 
@@ -28,17 +28,17 @@ func TestGetDefaultOptions(t *testing.T) {
 		Default: true,
 	}, o.Sources[0])
 
-	// When ENV var PREFAB_API_URL_OVERRIDE is set, that should be used instead
+	// When ENV var REFORGE_API_URL_OVERRIDE is set, that should be used instead
 	// of the default API URL.
 	desiredAPIURL := "https://api.staging-reforge.com"
 
-	t.Setenv("PREFAB_API_URL_OVERRIDE", desiredAPIURL)
+	t.Setenv("REFORGE_API_URL_OVERRIDE", desiredAPIURL)
 
 	o = options.GetDefaultOptions()
 	assert.Equal(t, []string{desiredAPIURL}, o.APIURLs)
 
-	t.Setenv("PREFAB_API_URL_OVERRIDE", "")
-	t.Setenv("PREFAB_DATAFILE", "testdata/download.json")
+	t.Setenv("REFORGE_API_URL_OVERRIDE", "")
+	t.Setenv("REFORGE_DATAFILE", "testdata/download.json")
 
 	o = options.GetDefaultOptions()
 	assert.Equal(t, []options.ConfigSource([]options.ConfigSource{{Store: "DataFile", Raw: "testdata/download.json", Path: "testdata/download.json", Default: false}}), o.Sources)

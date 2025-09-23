@@ -66,17 +66,17 @@ const timeoutDefault = 10.0
 func GetDefaultOptions() Options {
 	var apiURLs []string
 
-	if os.Getenv("PREFAB_API_URL_OVERRIDE") != "" {
-		apiURLs = []string{os.Getenv("PREFAB_API_URL_OVERRIDE")}
+	if os.Getenv("REFORGE_API_URL_OVERRIDE") != "" {
+		apiURLs = []string{os.Getenv("REFORGE_API_URL_OVERRIDE")}
 	}
 
 	sources := GetDefaultConfigSources()
 
-	if os.Getenv("PREFAB_DATAFILE") != "" {
+	if os.Getenv("REFORGE_DATAFILE") != "" {
 		sources = []ConfigSource{
 			{
-				Path:    os.Getenv("PREFAB_DATAFILE"),
-				Raw:     os.Getenv("PREFAB_DATAFILE"),
+				Path:    os.Getenv("REFORGE_DATAFILE"),
+				Raw:     os.Getenv("REFORGE_DATAFILE"),
 				Store:   DataFile,
 				Default: false,
 			},
@@ -137,8 +137,8 @@ func (o *Options) PrefabAPIURLEnvVarOrSetting() ([]string, error) {
 		return apiURLs, nil
 	}
 
-	if os.Getenv("PREFAB_API_URL_OVERRIDE") != "" {
-		apiURLs = []string{os.Getenv("PREFAB_API_URL_OVERRIDE")}
+	if os.Getenv("REFORGE_API_URL_OVERRIDE") != "" {
+		apiURLs = []string{os.Getenv("REFORGE_API_URL_OVERRIDE")}
 	} else {
 		for _, url := range o.APIURLs {
 			if url != "" {

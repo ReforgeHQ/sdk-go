@@ -25,3 +25,6 @@ go.work
 
 # Claude Code directories
 .claude/
+
+# Environment files with sensitive keys
+.envrc

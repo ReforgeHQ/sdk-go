@@ -86,7 +86,7 @@ func TestCannotUseWithConfigAndOtherSources(t *testing.T) {
 }
 
 func TestWithAJSONConfigDump(t *testing.T) {
-	t.Setenv("PREFAB_DATAFILE", "testdata/download.json")
+	t.Setenv("REFORGE_DATAFILE", "testdata/download.json")
 
 	client, err := reforge.NewSdk(reforge.WithContextTelemetryMode(options.ContextTelemetryModes.None))
 	require.NoError(t, err)
