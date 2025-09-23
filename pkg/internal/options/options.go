@@ -20,8 +20,9 @@ const (
 
 const (
 	// #nosec G101 -- This is just the env var name
-	APIKeyEnvVar = "PREFAB_API_KEY"
-	APIURLVar    = "PREFAB_API_URL"
+	SdkKeyEnvVar        = "REFORGE_SDK_KEY"
+	LegacyApiKeyEnvVar  = "PREFAB_API_KEY"
+	APIURLVar           = "PREFAB_API_URL"
 )
 
 func GetDefaultAPIURLs() []string {
@@ -46,7 +47,7 @@ var ContextTelemetryModes = struct {
 type Options struct {
 	GlobalContext                *contexts.ContextSet
 	Configs                      map[string]interface{}
-	APIKey                       string
+	SdkKey                       string
 	APIURLs                      []string
 	Sources                      []ConfigSource
 	EnvironmentNames             []string
@@ -83,7 +84,7 @@ func GetDefaultOptions() Options {
 	}
 
 	return Options{
-		APIKey:                       "",
+		SdkKey:                       "",
 		APIURLs:                      apiURLs,
 		InitializationTimeoutSeconds: timeoutDefault,
 		OnInitializationFailure:      ReturnError,
@@ -101,18 +102,22 @@ func (o *Options) TelemetryEnabled() bool {
 	return o.CollectEvaluationSummaries || o.ContextTelemetryMode != ContextTelemetryModes.None
 }
 
-func (o *Options) APIKeySettingOrEnvVar() (string, error) {
-	if o.APIKey == "" {
-		// Attempt to read from an environment variable if APIKey is not directly set
-		envAPIKey := os.Getenv(APIKeyEnvVar)
-		if envAPIKey == "" {
-			return "", fmt.Errorf("API key is not set and not found in environment variable %s", APIKeyEnvVar)
+func (o *Options) SdkKeySettingOrEnvVar() (string, error) {
+	if o.SdkKey == "" {
+		// Attempt to read from environment variables if SdkKey is not directly set
+		// Try new env var first, then fall back to legacy env var for backward compatibility
+		envSdkKey := os.Getenv(SdkKeyEnvVar)
+		if envSdkKey == "" {
+			envSdkKey = os.Getenv(LegacyApiKeyEnvVar)
+		}
+		if envSdkKey == "" {
+			return "", fmt.Errorf("SDK key is not set and not found in environment variables %s or %s", SdkKeyEnvVar, LegacyApiKeyEnvVar)
 		}
 
-		o.APIKey = envAPIKey
+		o.SdkKey = envSdkKey
 	}
 
-	return o.APIKey, nil
+	return o.SdkKey, nil
 }
 
 func (o *Options) PrefabAPIURLEnvVarOrSetting() ([]string, error) {

@@ -30,7 +30,7 @@ type Submitter struct {
 	evaluationSummaryAggregator *EvaluationSummaryAggregator
 	instanceHash                string
 	host                        string
-	apiKey                      string
+	sdkKey                      string
 	mutex                       *sync.Mutex
 	queue                       chan QueueItem
 }
@@ -55,7 +55,7 @@ func NewTelemetrySubmitter(options options.Options) *Submitter {
 	return &Submitter{
 		aggregators:                 aggregators,
 		host:                        options.TelemetryHost,
-		apiKey:                      options.APIKey,
+		sdkKey:                      options.SdkKey,
 		contextAggregators:          contextAggregators,
 		evaluationSummaryAggregator: evaluationSummaryAggregator,
 		mutex:                       &sync.Mutex{},
@@ -183,7 +183,7 @@ func (ts *Submitter) Submit(waitOnQueueToDrain bool) error {
 	req.Header.Set("Accept", "application/x-protobuf")
 	req.Header.Set("X-PrefabCloud-Client-Version", internal.ClientVersionHeader)
 
-	encodedAuth := base64.StdEncoding.EncodeToString([]byte("authuser:" + ts.apiKey))
+	encodedAuth := base64.StdEncoding.EncodeToString([]byte("authuser:" + ts.sdkKey))
 	req.Header.Set("Authorization", "Basic "+encodedAuth)
 
 	return ts.retryRequest(req)

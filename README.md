@@ -22,13 +22,13 @@ import (
 )
 
 func main() {
-	apiKey, exists := os.LookupEnv("PREFAB_API_KEY")
+	sdkKey, exists := os.LookupEnv("REFORGE_SDK_KEY")
 
 	if !exists {
-		log.Fatal("API Key not found")
+		log.Fatal("SDK Key not found")
 	}
 
-	client, err := reforge.NewSdk(reforge.WithAPIKey(apiKey))
+	client, err := reforge.NewSdk(reforge.WithSdkKey(sdkKey))
 
 	if err != nil {
 		log.Fatal(err)

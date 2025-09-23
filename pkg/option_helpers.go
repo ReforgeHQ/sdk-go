@@ -78,10 +78,10 @@ func WithGlobalContext(globalContext *ContextSet) Option {
 	}
 }
 
-// WithAPIKey sets the API key for the prefab client.
-func WithAPIKey(apiKey string) Option {
+// WithSdkKey sets the SDK key for the prefab client.
+func WithSdkKey(sdkKey string) Option {
 	return func(o *options.Options) error {
-		o.APIKey = apiKey
+		o.SdkKey = sdkKey
 
 		return nil
 	}

@@ -12,7 +12,7 @@ import (
 
 func TestBuildSSEClient(t *testing.T) {
 	options := options.Options{
-		APIKey:  "does-not-matter",
+		SdkKey:  "does-not-matter",
 		APIURLs: []string{"https://belt.prefab.cloud"},
 	}
 

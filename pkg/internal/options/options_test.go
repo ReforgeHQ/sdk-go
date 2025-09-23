@@ -16,7 +16,7 @@ func TestGetDefaultOptions(t *testing.T) {
 
 	o := options.GetDefaultOptions()
 
-	assert.Empty(t, o.APIKey)
+	assert.Empty(t, o.SdkKey)
 	assert.Nil(t, o.APIURLs)
 	assert.Equal(t, 10.0, o.InitializationTimeoutSeconds)
 	assert.Equal(t, options.ReturnError, o.OnInitializationFailure)

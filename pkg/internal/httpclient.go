@@ -31,7 +31,7 @@ func BuildHTTPClient(options options.Options) (*HTTPClient, error) {
 }
 
 func (c *HTTPClient) Load(offset int64) (*prefabProto.Configs, error) {
-	apiKey, err := c.Options.APIKeySettingOrEnvVar()
+	sdkKey, err := c.Options.SdkKeySettingOrEnvVar()
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (c *HTTPClient) Load(offset int64) (*prefabProto.Configs, error) {
 	for _, url := range c.URLs {
 		uri := fmt.Sprintf("%s/api/v1/configs/%d", url, offset)
 
-		configs, err := c.LoadFromURI(uri, apiKey, offset)
+		configs, err := c.LoadFromURI(uri, sdkKey, offset)
 		if err != nil {
 			slog.Error("Error loading from URI", "err", err)
 
@@ -52,7 +52,7 @@ func (c *HTTPClient) Load(offset int64) (*prefabProto.Configs, error) {
 	return nil, errors.New("error loading configs from all URIs")
 }
 
-func (c *HTTPClient) LoadFromURI(uri string, apiKey string, offset int64) (*prefabProto.Configs, error) {
+func (c *HTTPClient) LoadFromURI(uri string, sdkKey string, offset int64) (*prefabProto.Configs, error) {
 	slog.Debug("Getting data from "+uri, "offset", offset)
 
 	// Perform the HTTP GET request
@@ -61,7 +61,7 @@ func (c *HTTPClient) LoadFromURI(uri string, apiKey string, offset int64) (*pref
 		return nil, err
 	}
 
-	req.SetBasicAuth("1", apiKey)
+	req.SetBasicAuth("1", sdkKey)
 	req.Header.Add("X-PrefabCloud-Client-Version", ClientVersionHeader)
 
 	resp, err := http.DefaultClient.Do(req)

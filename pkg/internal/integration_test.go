@@ -29,7 +29,7 @@ import (
 type GeneratedTestSuite struct {
 	suite.Suite
 	BaseDirectory string
-	APIKey        string
+	SdkKey        string
 }
 
 func TestGeneratedSuite(t *testing.T) {
@@ -41,9 +41,9 @@ func (suite *GeneratedTestSuite) SetupSuite() {
 		suite.T().Skip("Skipping integration tests because FAST=true")
 	}
 
-	suite.BaseDirectory = "./testdata/prefab-cloud-integration-test-data/tests/current"
-	suite.APIKey = os.Getenv("PREFAB_INTEGRATION_TEST_API_KEY")
-	suite.Require().NotEmpty(suite.APIKey, "No API key found in environment var PREFAB_INTEGRATION_TEST_API_KEY")
+	suite.BaseDirectory = "./testdata/shared-integration-test-data/tests/current"
+	suite.SdkKey = os.Getenv("REFORGE_INTEGRATION_TEST_SDK_KEY")
+	suite.Require().NotEmpty(suite.SdkKey, "No SDK key found in environment var REFORGE_INTEGRATION_TEST_SDK_KEY")
 }
 
 func (suite *GeneratedTestSuite) loadGetTestCasesFromYAML(filename string) []*integrationtestsupport.GetTestCase {
@@ -275,7 +275,7 @@ type testCaseForBuildingClient interface {
 	GetClientOverrides() *integrationtestsupport.ClientOverridesYaml
 }
 
-func defaultTestOptions(suite *GeneratedTestSuite, apiKey string) []reforge.Option {
+func defaultTestOptions(suite *GeneratedTestSuite, sdkKey string) []reforge.Option {
 	// 50/50 setting the API URLs and using the env var override
 	useEnvVarOverride := rand.Intn(2) == 1
 
@@ -288,7 +288,7 @@ func defaultTestOptions(suite *GeneratedTestSuite, apiKey string) []reforge.Opti
 		return []reforge.Option{
 			// this URL won't work, but that's great because it is overridden by the env var
 			reforge.WithAPIURLs([]string{"https://localhost/this-will-not-work"}),
-			reforge.WithAPIKey(apiKey),
+			reforge.WithSdkKey(sdkKey),
 			// This can get overridden by provided `opts`
 			reforge.WithContextTelemetryMode(reforge.ContextTelemetryMode.None),
 		}
@@ -297,14 +297,14 @@ func defaultTestOptions(suite *GeneratedTestSuite, apiKey string) []reforge.Opti
 	// default to using the hardcoded URL override
 	return []reforge.Option{
 		reforge.WithAPIURLs([]string{url}),
-		reforge.WithAPIKey(apiKey),
+		reforge.WithSdkKey(sdkKey),
 		// This can get overridden by provided `opts`
 		reforge.WithContextTelemetryMode(reforge.ContextTelemetryMode.None),
 	}
 }
 
 func buildClient(suite *GeneratedTestSuite, testCase testCaseForBuildingClient, opts []reforge.Option) (*reforge.ContextBoundClient, error) {
-	options := defaultTestOptions(suite, suite.APIKey)
+	options := defaultTestOptions(suite, suite.SdkKey)
 
 	globalContexts := testCase.GetGlobalContexts()
 	if globalContexts != nil {
