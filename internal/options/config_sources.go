@@ -17,7 +17,6 @@ type StoreType string
 const (
 	APIStore   StoreType = "API"
 	DataFile   StoreType = "DataFile"
-	ConfigDump StoreType = "ConfigDump"
 	Memory     StoreType = "Memory"
 	// TODO: Support polling
 	// Poll       StoreType = "Poll"
@@ -44,8 +43,6 @@ func ParseConfigSource(rawSource string) (ConfigSource, error) {
 	switch protocol {
 	case "datafile":
 		return ConfigSource{Raw: rawSource, Store: DataFile, Default: false, Path: path}, nil
-	case "dump":
-		return ConfigSource{Raw: rawSource, Store: ConfigDump, Default: false, Path: path}, nil
 	case "memory":
 		return ConfigSource{Raw: rawSource, Store: Memory, Default: false, Path: path}, nil
 	}

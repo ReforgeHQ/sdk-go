@@ -76,7 +76,7 @@ func TestCannotUseWithConfigAndOtherSources(t *testing.T) {
 
 	_, err = reforge.NewSdk(
 		reforge.WithConfigs(configs),
-		reforge.WithOfflineSources([]string{"dump://testdata/example.dump"}),
+		reforge.WithOfflineSources([]string{"datafile://testdata/download.json"}),
 		reforge.WithContextTelemetryMode(options.ContextTelemetryModes.None),
 		reforge.WithProjectEnvID(8),
 	)

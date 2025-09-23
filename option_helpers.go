@@ -28,7 +28,7 @@ func WithProjectEnvID(projectEnvID int64) Option {
 //	client, err := reforge.NewSdk(
 //		reforge.WithProjectEnvID(projectEnvID),
 //		reforge.WithOfflineSources([]string{
-//			"dump://" + fileName,
+//			"datafile://" + fileName,
 //		}))
 func WithOfflineSources(sources []string) Option {
 	return func(o *options.Options) error {

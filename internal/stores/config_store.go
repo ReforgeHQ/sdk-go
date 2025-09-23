@@ -17,10 +17,6 @@ func BuildConfigStore(options opts.Options, source opts.ConfigSource, apiSourceF
 		store, err := NewLocalConfigStore(source.Path)
 
 		return store, false, err
-	case opts.ConfigDump:
-		store, err := NewConfigDumpConfigStore(source.Path, options.ProjectEnvID)
-
-		return store, false, err
 	case opts.Memory:
 		store, err := NewMemoryConfigStore(options.ProjectEnvID, options.Configs)
 
