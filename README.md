@@ -1,6 +1,6 @@
-# prefab-cloud-go
+# sdk-go
 
-Go Client for Prefab Feature Flags, Dynamic log levels, and Config as a Service: https://www.prefab.cloud
+Go SDK for Reforge Feature Flags, Dynamic log levels, and Config as a Service: https://www.reforge.com
 
 ## Installation
 

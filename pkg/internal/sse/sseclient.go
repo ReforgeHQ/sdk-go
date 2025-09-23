@@ -16,7 +16,7 @@ import (
 	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
 )
 
-var subdomainRegex = regexp.MustCompile(`(belt|suspenders)\.`)
+var subdomainRegex = regexp.MustCompile(`(primary|secondary)\.`)
 
 func BuildSSEClient(options options.Options) (*sse.Client, error) {
 	apiURLs, err := options.PrefabAPIURLEnvVarOrSetting()
@@ -31,7 +31,7 @@ func BuildSSEClient(options options.Options) (*sse.Client, error) {
 	authString := base64.StdEncoding.EncodeToString([]byte("authuser:" + options.SdkKey))
 
 	// TODO: handle multiple api urls
-	url := replaceFirstOccurrence(apiURLs[0], subdomainRegex, "stream.") + "/api/v1/sse/config"
+	url := replaceFirstOccurrence(apiURLs[0], subdomainRegex, "stream.") + "/api/v2/sse/config"
 	client := sse.NewClient(url)
 	client.Headers = map[string]string{
 		"Authorization":                "Basic " + authString,

@@ -27,8 +27,8 @@ const (
 
 func GetDefaultAPIURLs() []string {
 	return []string{
-		"https://belt.prefab.cloud",
-		"https://suspenders.prefab.cloud",
+		"https://primary.reforge.com",
+		"https://secondary.reforge.com",
 	}
 }
 
@@ -92,7 +92,7 @@ func GetDefaultOptions() Options {
 		Sources:                      sources,
 		ContextTelemetryMode:         ContextTelemetryModes.PeriodicExample,
 		TelemetrySyncInterval:        1 * time.Minute,
-		TelemetryHost:                "https://telemetry.prefab.cloud",
+		TelemetryHost:                "https://telemetry.reforge.com",
 		CollectEvaluationSummaries:   true,
 		InstanceHash:                 uuid.New().String(),
 	}

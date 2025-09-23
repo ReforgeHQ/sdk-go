@@ -279,7 +279,7 @@ func defaultTestOptions(suite *GeneratedTestSuite, sdkKey string) []reforge.Opti
 	// 50/50 setting the API URLs and using the env var override
 	useEnvVarOverride := rand.Intn(2) == 1
 
-	url := "https://api.staging-prefab.cloud"
+	url := "https://api.staging-reforge.com"
 
 	// if we flip the coin and get 1, then we'll use the env var override
 	if useEnvVarOverride {

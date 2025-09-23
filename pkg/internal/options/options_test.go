@@ -30,7 +30,7 @@ func TestGetDefaultOptions(t *testing.T) {
 
 	// When ENV var PREFAB_API_URL_OVERRIDE is set, that should be used instead
 	// of the default API URL.
-	desiredAPIURL := "https://api.staging-prefab.cloud"
+	desiredAPIURL := "https://api.staging-reforge.com"
 
 	t.Setenv("PREFAB_API_URL_OVERRIDE", desiredAPIURL)
 
