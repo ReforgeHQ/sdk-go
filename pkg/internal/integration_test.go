@@ -137,19 +137,19 @@ func testContextToContextSet(rawContext integrationtestsupport.TestContext) *con
 func functionFromTypeString(typeString string) (interface{}, bool) {
 	switch typeString {
 	case "INT":
-		return prefab.ClientInterface.GetIntValue, true
+		return reforge.ClientInterface.GetIntValue, true
 	case "BOOL":
-		return prefab.ClientInterface.GetBoolValue, true
+		return reforge.ClientInterface.GetBoolValue, true
 	case "DOUBLE":
-		return prefab.ClientInterface.GetFloatValue, true
+		return reforge.ClientInterface.GetFloatValue, true
 	case "STRING":
-		return prefab.ClientInterface.GetStringValue, true
+		return reforge.ClientInterface.GetStringValue, true
 	case "STRING_LIST":
-		return prefab.ClientInterface.GetStringSliceValue, true
+		return reforge.ClientInterface.GetStringSliceValue, true
 	case "DURATION":
-		return prefab.ClientInterface.GetDurationValue, true
+		return reforge.ClientInterface.GetDurationValue, true
 	case "JSON":
-		return prefab.ClientInterface.GetJSONValue, true
+		return reforge.ClientInterface.GetJSONValue, true
 	}
 
 	slog.Error("unsupported type", "type", typeString)
@@ -160,15 +160,15 @@ func functionFromTypeString(typeString string) (interface{}, bool) {
 func functionWithDefaultFromTypeString(typeString string) (interface{}, bool) {
 	switch typeString {
 	case "INT":
-		return prefab.ClientInterface.GetIntValueWithDefault, true
+		return reforge.ClientInterface.GetIntValueWithDefault, true
 	case "BOOL":
-		return prefab.ClientInterface.GetBoolValueWithDefault, true
+		return reforge.ClientInterface.GetBoolValueWithDefault, true
 	case "DOUBLE":
-		return prefab.ClientInterface.GetFloatValueWithDefault, true
+		return reforge.ClientInterface.GetFloatValueWithDefault, true
 	case "STRING":
-		return prefab.ClientInterface.GetStringValueWithDefault, true
+		return reforge.ClientInterface.GetStringValueWithDefault, true
 	case "STRING_LIST":
-		return prefab.ClientInterface.GetStringSliceValueWithDefault, true
+		return reforge.ClientInterface.GetStringSliceValueWithDefault, true
 	}
 
 	slog.Error("unsupported type", "type", typeString)
@@ -214,7 +214,7 @@ func (suite *GeneratedTestSuite) TestAll() {
 	}
 }
 
-func (suite *GeneratedTestSuite) makeGetCall(client prefab.ClientInterface, dataType *string, key string, contextSet *contexts.ContextSet, hasDefault bool, defaultValue any) configLookupResult {
+func (suite *GeneratedTestSuite) makeGetCall(client reforge.ClientInterface, dataType *string, key string, contextSet *contexts.ContextSet, hasDefault bool, defaultValue any) configLookupResult {
 	var returnOfGetCall []reflect.Value
 
 	suite.Require().NotNil(dataType, "dataType (from testcase.Type) should not be nil. Fix the data")
@@ -275,7 +275,7 @@ type testCaseForBuildingClient interface {
 	GetClientOverrides() *integrationtestsupport.ClientOverridesYaml
 }
 
-func defaultTestOptions(suite *GeneratedTestSuite, apiKey string) []prefab.Option {
+func defaultTestOptions(suite *GeneratedTestSuite, apiKey string) []reforge.Option {
 	// 50/50 setting the API URLs and using the env var override
 	useEnvVarOverride := rand.Intn(2) == 1
 
@@ -285,30 +285,30 @@ func defaultTestOptions(suite *GeneratedTestSuite, apiKey string) []prefab.Optio
 	if useEnvVarOverride {
 		suite.T().Setenv("PREFAB_API_URL_OVERRIDE", url)
 
-		return []prefab.Option{
+		return []reforge.Option{
 			// this URL won't work, but that's great because it is overridden by the env var
-			prefab.WithAPIURLs([]string{"https://localhost/this-will-not-work"}),
-			prefab.WithAPIKey(apiKey),
+			reforge.WithAPIURLs([]string{"https://localhost/this-will-not-work"}),
+			reforge.WithAPIKey(apiKey),
 			// This can get overridden by provided `opts`
-			prefab.WithContextTelemetryMode(prefab.ContextTelemetryMode.None),
+			reforge.WithContextTelemetryMode(reforge.ContextTelemetryMode.None),
 		}
 	}
 
 	// default to using the hardcoded URL override
-	return []prefab.Option{
-		prefab.WithAPIURLs([]string{url}),
-		prefab.WithAPIKey(apiKey),
+	return []reforge.Option{
+		reforge.WithAPIURLs([]string{url}),
+		reforge.WithAPIKey(apiKey),
 		// This can get overridden by provided `opts`
-		prefab.WithContextTelemetryMode(prefab.ContextTelemetryMode.None),
+		reforge.WithContextTelemetryMode(reforge.ContextTelemetryMode.None),
 	}
 }
 
-func buildClient(suite *GeneratedTestSuite, testCase testCaseForBuildingClient, opts []prefab.Option) (*prefab.ContextBoundClient, error) {
+func buildClient(suite *GeneratedTestSuite, testCase testCaseForBuildingClient, opts []reforge.Option) (*reforge.ContextBoundClient, error) {
 	options := defaultTestOptions(suite, suite.APIKey)
 
 	globalContexts := testCase.GetGlobalContexts()
 	if globalContexts != nil {
-		options = append(options, prefab.WithGlobalContext(globalContexts))
+		options = append(options, reforge.WithGlobalContext(globalContexts))
 	}
 
 	if opts != nil {
@@ -319,35 +319,35 @@ func buildClient(suite *GeneratedTestSuite, testCase testCaseForBuildingClient, 
 		options = applyOverrides(testCase.GetClientOverrides(), options)
 	}
 
-	client, err := prefab.NewClient(options...)
+	client, err := reforge.NewSdk(options...)
 	if err != nil {
 		return nil, err
 	}
 
 	blockContexts := testCase.GetBlockContexts()
 	if blockContexts == nil {
-		return client.WithContext(prefab.NewContextSet()), nil
+		return client.WithContext(reforge.NewContextSet()), nil
 	}
 
 	return client.WithContext(blockContexts), nil
 }
 
-func applyOverrides(clientOverrides *integrationtestsupport.ClientOverridesYaml, options []prefab.Option) []prefab.Option {
+func applyOverrides(clientOverrides *integrationtestsupport.ClientOverridesYaml, options []reforge.Option) []reforge.Option {
 	if clientOverrides.OnInitFailure != nil {
 		onInitFailure, onInitFailureMappingErr := mapStringToOnInitializationFailure(*clientOverrides.OnInitFailure)
 		if onInitFailureMappingErr != nil {
 			panic(onInitFailureMappingErr)
 		}
 
-		options = append(options, prefab.WithOnInitializationFailure(onInitFailure))
+		options = append(options, reforge.WithOnInitializationFailure(onInitFailure))
 	}
 
 	if clientOverrides.InitializationTimeOutSec != nil {
-		options = append(options, prefab.WithInitializationTimeoutSeconds(*clientOverrides.InitializationTimeOutSec))
+		options = append(options, reforge.WithInitializationTimeoutSeconds(*clientOverrides.InitializationTimeOutSec))
 	}
 
 	if clientOverrides.PrefabAPIURL != nil {
-		options = append(options, prefab.WithAPIURLs([]string{*clientOverrides.PrefabAPIURL}))
+		options = append(options, reforge.WithAPIURLs([]string{*clientOverrides.PrefabAPIURL}))
 	}
 
 	return options
@@ -358,7 +358,7 @@ type expectedResult struct {
 	err   *string
 }
 
-func enabledTest(suite *GeneratedTestSuite, testCase *integrationtestsupport.GetTestCase, client prefab.ClientInterface) {
+func enabledTest(suite *GeneratedTestSuite, testCase *integrationtestsupport.GetTestCase, client reforge.ClientInterface) {
 	expected, ok := processExpectedResult(testCase)
 	suite.Require().True(ok, "no expected value for test case %s", testCase.CaseName)
 
@@ -472,9 +472,9 @@ func (suite *GeneratedTestSuite) executeTelemetryTest(filename string) {
 			requests, ts := integrationtestsupport.StartTestServer()
 			defer ts.Close()
 
-			options := []prefab.Option{
-				prefab.WithTelemetryHost(ts.URL),
-				prefab.WithCollectEvaluationSummaries(false), // override by default
+			options := []reforge.Option{
+				reforge.WithTelemetryHost(ts.URL),
+				reforge.WithCollectEvaluationSummaries(false), // override by default
 			}
 			options = append(options, tt.GetOptions()...)
 
@@ -579,11 +579,11 @@ func processExpectedResult(testCase *integrationtestsupport.GetTestCase) (expect
 func mapStringToOnInitializationFailure(str string) (options.OnInitializationFailure, error) {
 	switch str {
 	case ":raise":
-		return prefab.ReturnError, nil
+		return reforge.ReturnError, nil
 	case ":return":
-		return prefab.ReturnNilMatch, nil
+		return reforge.ReturnNilMatch, nil
 	default:
-		return prefab.ReturnError, fmt.Errorf("unknown OnInitializationFailure value %s", str)
+		return reforge.ReturnError, fmt.Errorf("unknown OnInitializationFailure value %s", str)
 	}
 }
 

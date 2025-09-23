@@ -30,8 +30,8 @@ func (c EvaluationSummaryTestHarness) ExpectedData() ([]ExpectedEvaluationSummar
 	return expectedData, err
 }
 
-func (c EvaluationSummaryTestHarness) GetOptions() []prefab.Option {
-	return []prefab.Option{prefab.WithCollectEvaluationSummaries(true)}
+func (c EvaluationSummaryTestHarness) GetOptions() []reforge.Option {
+	return []reforge.Option{reforge.WithCollectEvaluationSummaries(true)}
 }
 
 func (c EvaluationSummaryTestHarness) GetExpectedEvents() ([]*prefabProto.TelemetryEvent, error) {
@@ -72,7 +72,7 @@ func (c EvaluationSummaryTestHarness) GetExpectedEvents() ([]*prefabProto.Teleme
 	}, nil
 }
 
-func (c EvaluationSummaryTestHarness) Exercise(client *prefab.ContextBoundClient) error {
+func (c EvaluationSummaryTestHarness) Exercise(client *reforge.ContextBoundClient) error {
 	expectedData, err := c.ExpectedData()
 	if err != nil {
 		return err

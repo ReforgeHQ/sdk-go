@@ -11,8 +11,8 @@ type ExampleContextTestHarness struct {
 	testCase TelemetryTestCase
 }
 
-func (c ExampleContextTestHarness) GetOptions() []prefab.Option {
-	return []prefab.Option{prefab.WithContextTelemetryMode(prefab.ContextTelemetryMode.PeriodicExample)}
+func (c ExampleContextTestHarness) GetOptions() []reforge.Option {
+	return []reforge.Option{reforge.WithContextTelemetryMode(reforge.ContextTelemetryMode.PeriodicExample)}
 }
 
 func (c ExampleContextTestHarness) GetExpectedEvents() ([]*prefabProto.TelemetryEvent, error) {
@@ -47,7 +47,7 @@ func (c ExampleContextTestHarness) GetExpectedEvents() ([]*prefabProto.Telemetry
 	}, nil
 }
 
-func (c ExampleContextTestHarness) Exercise(client *prefab.ContextBoundClient) error {
+func (c ExampleContextTestHarness) Exercise(client *reforge.ContextBoundClient) error {
 	context := ctxDataToContextSet(c.testCase.Yaml.Data.(map[string]interface{}))
 
 	_, _, err := client.GetIntValue("does.not.exist", *context)

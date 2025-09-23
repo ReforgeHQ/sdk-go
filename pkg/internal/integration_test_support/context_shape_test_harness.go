@@ -14,8 +14,8 @@ type ContextShapeTestHarness struct {
 	testCase TelemetryTestCase
 }
 
-func (c ContextShapeTestHarness) GetOptions() []prefab.Option {
-	return []prefab.Option{prefab.WithContextTelemetryMode(prefab.ContextTelemetryMode.Shapes)}
+func (c ContextShapeTestHarness) GetOptions() []reforge.Option {
+	return []reforge.Option{reforge.WithContextTelemetryMode(reforge.ContextTelemetryMode.Shapes)}
 }
 
 func (c ContextShapeTestHarness) GetExpectedEvents() ([]*prefabProto.TelemetryEvent, error) {
@@ -48,7 +48,7 @@ func (c ContextShapeTestHarness) GetExpectedEvents() ([]*prefabProto.TelemetryEv
 	}, nil
 }
 
-func (c ContextShapeTestHarness) Exercise(client *prefab.ContextBoundClient) error {
+func (c ContextShapeTestHarness) Exercise(client *reforge.ContextBoundClient) error {
 	context := ctxDataToContextSet(c.testCase.Yaml.Data.(map[string]interface{}))
 
 	_, _, err := client.GetIntValue("does.not.exist", *context)

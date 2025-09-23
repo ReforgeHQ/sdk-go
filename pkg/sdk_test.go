@@ -1,4 +1,4 @@
-package prefab_test
+package reforge_test
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	prefab "github.com/ReforgeHQ/sdk-go/pkg"
+	reforge "github.com/ReforgeHQ/sdk-go/pkg"
 	"github.com/ReforgeHQ/sdk-go/pkg/internal/options"
 )
 
@@ -23,39 +23,39 @@ func TestWithConfig(t *testing.T) {
 		},
 	}
 
-	client, err := prefab.NewClient(
-		prefab.WithConfigs(configs),
-		prefab.WithInitializationTimeoutSeconds(5.0),
-		prefab.WithContextTelemetryMode(options.ContextTelemetryModes.None))
+	client, err := reforge.NewSdk(
+		reforge.WithConfigs(configs),
+		reforge.WithInitializationTimeoutSeconds(5.0),
+		reforge.WithContextTelemetryMode(options.ContextTelemetryModes.None))
 
 	require.NoError(t, err)
 
-	str, ok, err := client.GetStringValue("string.key", prefab.ContextSet{})
+	str, ok, err := client.GetStringValue("string.key", reforge.ContextSet{})
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, "value", str)
 
-	i, ok, err := client.GetIntValue("int.key", prefab.ContextSet{})
+	i, ok, err := client.GetIntValue("int.key", reforge.ContextSet{})
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, int64(42), i)
 
-	b, ok, err := client.GetBoolValue("bool.key", prefab.ContextSet{})
+	b, ok, err := client.GetBoolValue("bool.key", reforge.ContextSet{})
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.True(t, b)
 
-	f, ok, err := client.GetFloatValue("float.key", prefab.ContextSet{})
+	f, ok, err := client.GetFloatValue("float.key", reforge.ContextSet{})
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.InDelta(t, 3.14, f, 0.0001)
 
-	slice, ok, err := client.GetStringSliceValue("slice.key", prefab.ContextSet{})
+	slice, ok, err := client.GetStringSliceValue("slice.key", reforge.ContextSet{})
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, []string{"a", "b", "c"}, slice)
 
-	json, ok, err := client.GetJSONValue("json.key", prefab.ContextSet{})
+	json, ok, err := client.GetJSONValue("json.key", reforge.ContextSet{})
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, map[string]interface{}{"nested": "value"}, json)
@@ -66,19 +66,19 @@ func TestCannotUseWithConfigAndOtherSources(t *testing.T) {
 		"string.key": "value",
 	}
 
-	_, err := prefab.NewClient(
-		prefab.WithConfigs(configs),
-		prefab.WithContextTelemetryMode(options.ContextTelemetryModes.None),
-		prefab.WithSources([]string{}, false)) // Explicitly try to use online sources
+	_, err := reforge.NewSdk(
+		reforge.WithConfigs(configs),
+		reforge.WithContextTelemetryMode(options.ContextTelemetryModes.None),
+		reforge.WithSources([]string{}, false)) // Explicitly try to use online sources
 
 	require.Error(t, err)
 	assert.Equal(t, "cannot use WithConfigs with other sources", err.Error())
 
-	_, err = prefab.NewClient(
-		prefab.WithConfigs(configs),
-		prefab.WithOfflineSources([]string{"dump://testdata/example.dump"}),
-		prefab.WithContextTelemetryMode(options.ContextTelemetryModes.None),
-		prefab.WithProjectEnvID(8),
+	_, err = reforge.NewSdk(
+		reforge.WithConfigs(configs),
+		reforge.WithOfflineSources([]string{"dump://testdata/example.dump"}),
+		reforge.WithContextTelemetryMode(options.ContextTelemetryModes.None),
+		reforge.WithProjectEnvID(8),
 	)
 
 	require.Error(t, err)
@@ -88,20 +88,20 @@ func TestCannotUseWithConfigAndOtherSources(t *testing.T) {
 func TestWithAJSONConfigDump(t *testing.T) {
 	t.Setenv("PREFAB_DATAFILE", "testdata/download.json")
 
-	client, err := prefab.NewClient(prefab.WithContextTelemetryMode(options.ContextTelemetryModes.None))
+	client, err := reforge.NewSdk(reforge.WithContextTelemetryMode(options.ContextTelemetryModes.None))
 	require.NoError(t, err)
 
-	str, ok, err := client.GetStringValue("my.test.string", prefab.ContextSet{})
+	str, ok, err := client.GetStringValue("my.test.string", reforge.ContextSet{})
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, "hello world", str)
 
-	boolean, ok, err := client.GetBoolValue("flag.list.environments", prefab.ContextSet{})
+	boolean, ok, err := client.GetBoolValue("flag.list.environments", reforge.ContextSet{})
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.False(t, boolean)
 
-	contextSet := prefab.NewContextSet().
+	contextSet := reforge.NewContextSet().
 		WithNamedContextValues("user", map[string]interface{}{
 			"key": "5905ecd1-9bbf-4711-a663-4f713628a78c",
 		})
@@ -112,41 +112,41 @@ func TestWithAJSONConfigDump(t *testing.T) {
 	assert.True(t, boolean)
 
 	// Same thing as above, but with client.WithContext
-	boolean, ok, err = client.WithContext(contextSet).GetBoolValue("flag.list.environments", prefab.ContextSet{})
+	boolean, ok, err = client.WithContext(contextSet).GetBoolValue("flag.list.environments", reforge.ContextSet{})
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.True(t, boolean)
 
 	// This one is deleted
-	_, ok, err = client.GetLogLevelStringValue("log-level", prefab.ContextSet{})
+	_, ok, err = client.GetLogLevelStringValue("log-level", reforge.ContextSet{})
 	require.ErrorContains(t, err, "config did not produce a result and no default is specified")
 	assert.False(t, ok)
 }
 
 func TestGetConfigMatchWithAJSONConfigDumpAndGlobalContext(t *testing.T) {
-	ctx := prefab.NewContextSet().WithNamedContextValues("prefab-api-key", map[string]any{"user-id": 1039})
-	client, err := prefab.NewClient(prefab.WithOfflineSources([]string{
+	ctx := reforge.NewContextSet().WithNamedContextValues("prefab-api-key", map[string]any{"user-id": 1039})
+	client, err := reforge.NewSdk(reforge.WithOfflineSources([]string{
 		fmt.Sprintf("datafile://%s", "testdata/download.json"),
-	}), prefab.WithGlobalContext(ctx))
+	}), reforge.WithGlobalContext(ctx))
 	require.NoError(t, err)
 
-	str, ok, err := client.GetStringValue("test.with.rule", *prefab.NewContextSet())
+	str, ok, err := client.GetStringValue("test.with.rule", *reforge.NewContextSet())
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, "targeted", str)
 
 	// this tests client.GetConfigMatch which is used internally
-	configMatch, err := client.GetConfigMatch("test.with.rule", *prefab.NewContextSet())
+	configMatch, err := client.GetConfigMatch("test.with.rule", *reforge.NewContextSet())
 	require.NoError(t, err)
 	assert.Equal(t, "targeted", configMatch.OriginalMatch.GetString_())
 
-	valueAny, ok, err := prefab.ExtractValue(configMatch.OriginalMatch)
+	valueAny, ok, err := reforge.ExtractValue(configMatch.OriginalMatch)
 	require.NoError(t, err)
 	require.True(t, ok)
 	assert.Equal(t, "targeted", valueAny)
 
 	// now show that shadowing the default context produces a different result
-	contextSet := prefab.NewContextSet().
+	contextSet := reforge.NewContextSet().
 		WithNamedContextValues("prefab-api-key", map[string]interface{}{
 			"user-id": 0,
 		})

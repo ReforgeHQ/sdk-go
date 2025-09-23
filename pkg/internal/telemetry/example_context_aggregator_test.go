@@ -33,7 +33,7 @@ func TestExampleContextAggregator_Record(t *testing.T) {
 	eca := telemetry.NewExampleContextAggregator()
 
 	// Recording the initial context set adds a new entry
-	contextSet := prefab.NewContextSet().
+	contextSet := reforge.NewContextSet().
 		WithNamedContextValues("host", map[string]interface{}{
 			"key":    "h123",
 			"name":   "HOSTNAME",
@@ -57,7 +57,7 @@ func TestExampleContextAggregator_Record(t *testing.T) {
 	assert.Equal(`type:"user" values:{key:"email" value:{string:"test@example.com"}} values:{key:"key" value:{string:"u123"}}`, data[1])
 
 	// Recording another context set adds a new entry
-	anotherContextSet := prefab.NewContextSet().
+	anotherContextSet := reforge.NewContextSet().
 		WithNamedContextValues("host", map[string]interface{}{
 			"key":    "h987",
 			"name":   "HOSTNAME2",
@@ -81,7 +81,7 @@ func TestExampleContextAggregator_Record(t *testing.T) {
 	assert.Equal(`type:"user" values:{key:"email" value:{string:"bort@example.com"}} values:{key:"key" value:{string:"u987"}}`, data[1])
 
 	// Recording the same context keys again does not add a new entry
-	modifiedContextSet := prefab.NewContextSet().
+	modifiedContextSet := reforge.NewContextSet().
 		WithNamedContextValues("host", map[string]interface{}{
 			// Key is the same
 			"key": "h123",
@@ -102,7 +102,7 @@ func TestExampleContextAggregator_Record(t *testing.T) {
 	assert.Equal(`type:"user" values:{key:"email" value:{string:"test@example.com"}} values:{key:"key" value:{string:"u123"}}`, data[1])
 
 	// Recording an empty context does nothing
-	emptyContextSet := prefab.NewContextSet()
+	emptyContextSet := reforge.NewContextSet()
 
 	eca.Record(emptyContextSet)
 	assert.Equal(2, len(eca.Data))

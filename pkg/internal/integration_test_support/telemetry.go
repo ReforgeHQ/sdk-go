@@ -47,9 +47,9 @@ func (t TelemetryTestCase) GetClientOverrides() *ClientOverridesYaml {
 }
 
 type TelemetryTestHarness interface {
-	GetOptions() []prefab.Option
+	GetOptions() []reforge.Option
 	GetExpectedEvents() ([]*prefabProto.TelemetryEvent, error)
-	Exercise(*prefab.ContextBoundClient) error
+	Exercise(*reforge.ContextBoundClient) error
 	MassagePayload(events *prefabProto.TelemetryEvents) *prefabProto.TelemetryEvents
 }
 

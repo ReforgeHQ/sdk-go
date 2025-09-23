@@ -47,7 +47,7 @@ func TestGetDefaultOptions(t *testing.T) {
 func TestOptions_TelemetryEnabledOverride(t *testing.T) {
 	defaultOptions := options.GetDefaultOptions()
 	assert.True(t, defaultOptions.TelemetryEnabled())
-	_ = prefab.WithAllTelemetryDisabled()(&defaultOptions)
+	_ = reforge.WithAllTelemetryDisabled()(&defaultOptions)
 	assert.False(t, defaultOptions.TelemetryEnabled())
 }
 
@@ -55,9 +55,9 @@ func TestOptions_TelemetryEnabledCalculatesBasedOnOptions(t *testing.T) {
 	defaultOptions := options.GetDefaultOptions()
 	assert.True(t, defaultOptions.TelemetryEnabled())
 
-	_ = prefab.WithCollectEvaluationSummaries(false)(&defaultOptions)
+	_ = reforge.WithCollectEvaluationSummaries(false)(&defaultOptions)
 	assert.True(t, defaultOptions.TelemetryEnabled())
 
-	_ = prefab.WithContextTelemetryMode(options.ContextTelemetryModes.None)(&defaultOptions)
+	_ = reforge.WithContextTelemetryMode(options.ContextTelemetryModes.None)(&defaultOptions)
 	assert.False(t, defaultOptions.TelemetryEnabled())
 }

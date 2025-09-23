@@ -1,5 +1,5 @@
-// Package prefab provides a client for fetching configuration and feature flags from the Prefab Cloud API.
-package prefab
+// Package reforge provides a client for fetching configuration and feature flags from the Reforge API.
+package reforge
 
 import (
 	"errors"
@@ -84,8 +84,8 @@ type Client struct {
 	instanceHash                    string
 }
 
-// NewClient creates a new Prefab client. It takes options as arguments (e.g. WithAPIKey)
-func NewClient(opts ...Option) (*Client, error) {
+// NewSdk creates a new Reforge SDK. It takes options as arguments (e.g. WithSdkKey)
+func NewSdk(opts ...Option) (*Client, error) {
 	options := optionsPkg.GetDefaultOptions()
 
 	var client Client

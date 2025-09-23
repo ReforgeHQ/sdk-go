@@ -18,7 +18,7 @@ import (
 	"log"
 	"os"
 
-	prefab "github.com/prefab-cloud/prefab-cloud-go/pkg"
+	reforge "github.com/ReforgeHQ/sdk-go/pkg"
 )
 
 func main() {
@@ -28,13 +28,13 @@ func main() {
 		log.Fatal("API Key not found")
 	}
 
-	client, err := prefab.NewClient(prefab.WithAPIKey(apiKey))
+	client, err := reforge.NewSdk(reforge.WithAPIKey(apiKey))
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	val, ok, err := client.GetStringValue("my.string.config", prefab.ContextSet{})
+	val, ok, err := client.GetStringValue("my.string.config", reforge.ContextSet{})
 
 	if err != nil {
 		log.Fatal(err)

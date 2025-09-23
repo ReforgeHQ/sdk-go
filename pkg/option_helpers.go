@@ -25,9 +25,9 @@ func WithProjectEnvID(projectEnvID int64) Option {
 // Do not use this option if you are using the standard API or SSE sources.
 // Example:
 //
-//	client, err := prefab.NewClient(
-//		prefab.WithProjectEnvID(projectEnvID),
-//		prefab.WithOfflineSources([]string{
+//	client, err := reforge.NewSdk(
+//		reforge.WithProjectEnvID(projectEnvID),
+//		reforge.WithOfflineSources([]string{
 //			"dump://" + fileName,
 //		}))
 func WithOfflineSources(sources []string) Option {
@@ -109,9 +109,9 @@ func WithInitializationTimeoutSeconds(timeoutSeconds float64) Option {
 
 // WithOnInitializationFailure sets the behavior for the prefab client when initialization fails.
 //
-// The default behavior is to return an error when a GetConfig (or similar) call is made (prefab.ReturnError).
+// The default behavior is to return an error when a GetConfig (or similar) call is made (reforge.ReturnError).
 //
-// If you want to ignore the error and continue, use prefab.ReturnNilMatch.
+// If you want to ignore the error and continue, use reforge.ReturnNilMatch.
 func WithOnInitializationFailure(onInitializationFailure options.OnInitializationFailure) Option {
 	return func(o *options.Options) error {
 		o.OnInitializationFailure = onInitializationFailure
@@ -134,7 +134,7 @@ func WithOnInitializationFailure(onInitializationFailure options.OnInitializatio
 //		},
 //	}
 //
-//	client, err := prefab.NewClient(prefab.WithConfigs(configs))
+//	client, err := reforge.NewSdk(reforge.WithConfigs(configs))
 func WithConfigs(configs map[string]interface{}) Option {
 	return func(o *options.Options) error {
 		err := WithOfflineSources([]string{options.MemoryStoreKey})(o)
