@@ -90,6 +90,12 @@ func (c *HTTPClient) LoadFromURI(uri string, sdkKey string, offset int64) (*pref
 		return nil, err
 	}
 
+	// Skip empty responses (protects against empty body from server)
+	if len(bodyBytes) == 0 {
+		slog.Debug("Received empty response body from HTTP endpoint, skipping")
+		return nil, errors.New("empty response body")
+	}
+
 	// Deserialize the data into the protobuf message
 	var msg prefabProto.Configs
 
