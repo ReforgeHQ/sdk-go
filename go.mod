@@ -1,8 +1,6 @@
 module github.com/ReforgeHQ/sdk-go
 
-go 1.23.0
-
-toolchain go1.24.1
+go 1.22
 
 require (
 	github.com/google/uuid v1.6.0
