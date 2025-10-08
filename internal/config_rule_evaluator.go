@@ -18,6 +18,7 @@ type ConditionMatch struct {
 	Match                 *prefabProto.ConfigValue
 	RowIndex              *int
 	ConditionalValueIndex *int
+	EnvId                 *int64
 	IsMatch               bool
 }
 
@@ -71,6 +72,7 @@ func (cve *ConfigRuleEvaluator) EvaluateRow(row *prefabProto.ConfigRow, contextS
 			conditionMatch.RowIndex = &rowIndex
 			conditionMatch.ConditionalValueIndex = &conditionalValueIndex
 			conditionMatch.Match = matchedValue
+			conditionMatch.EnvId = row.ProjectEnvId
 
 			break
 		}

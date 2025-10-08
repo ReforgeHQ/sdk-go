@@ -19,6 +19,7 @@ type ConfigMatch struct {
 	WeightedValueIndex    *int
 	RowIndex              *int
 	ConditionalValueIndex *int
+	EnvId                 *int64
 	IsMatch               bool
 }
 
@@ -29,6 +30,7 @@ func NewConfigMatchFromConditionMatch(conditionMatch ConditionMatch) ConfigMatch
 		Match:                 conditionMatch.Match,
 		RowIndex:              conditionMatch.RowIndex,
 		ConditionalValueIndex: conditionMatch.ConditionalValueIndex,
+		EnvId:                 conditionMatch.EnvId,
 	}
 }
 

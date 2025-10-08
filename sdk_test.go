@@ -140,6 +140,10 @@ func TestGetConfigMatchWithAJSONConfigDumpAndGlobalContext(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "targeted", configMatch.OriginalMatch.GetString_())
 
+	// Verify EnvId is populated correctly
+	require.NotNil(t, configMatch.EnvId)
+	assert.Equal(t, int64(308), *configMatch.EnvId)
+
 	valueAny, ok, err := reforge.ExtractValue(configMatch.OriginalMatch)
 	require.NoError(t, err)
 	require.True(t, ok)
@@ -155,4 +159,10 @@ func TestGetConfigMatchWithAJSONConfigDumpAndGlobalContext(t *testing.T) {
 	require.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, "default", str)
+
+	// Verify that when matching the default row (no projectEnvId), EnvId is nil
+	configMatch, err = client.GetConfigMatch("test.with.rule", *contextSet)
+	require.NoError(t, err)
+	assert.Equal(t, "default", configMatch.OriginalMatch.GetString_())
+	assert.Nil(t, configMatch.EnvId)
 }
