@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-	sdkKey, exists := os.LookupEnv("REFORGE_SDK_KEY")
+	sdkKey, exists := os.LookupEnv("REFORGE_BACKEND_SDK_KEY")
 
 	if !exists {
 		log.Fatal("SDK Key not found")
