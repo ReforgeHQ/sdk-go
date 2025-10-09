@@ -22,7 +22,7 @@ const (
 	// SdkKeyEnvVar #nosec G101 -- This is just the env var name
 	SdkKeyEnvVar       = "REFORGE_BACKEND_SDK_KEY"
 	LegacyApiKeyEnvVar = "PREFAB_API_KEY"
-	APIURLVar          = "PREFAB_API_URL"
+	APIURLVar          = "REFORGE_API_URL"
 )
 
 func GetDefaultAPIURLs() []string {
