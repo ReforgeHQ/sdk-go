@@ -51,6 +51,7 @@ type Options struct {
 	APIURLs                      []string
 	Sources                      []ConfigSource
 	CustomStores                 []interface{} // ConfigStoreGetter implementations
+	CustomEnvLookup              interface{}   // EnvLookup implementation
 	EnvironmentNames             []string
 	ProjectEnvID                 int64
 	InitializationTimeoutSeconds float64

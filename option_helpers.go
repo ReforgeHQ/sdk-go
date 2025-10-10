@@ -213,3 +213,20 @@ func WithCustomStore(store ConfigStoreGetter) Option {
 		return nil
 	}
 }
+
+// WithEnvLookup provides a custom environment variable lookup implementation.
+// This is useful for embedded scenarios where direct environment access should be disabled.
+// The default behavior uses os.LookupEnv.
+//
+// Example (disable environment variable access):
+//
+//	type NoOpEnvLookup struct{}
+//	func (n *NoOpEnvLookup) LookupEnv(key string) (string, bool) { return "", false }
+//
+//	client, err := reforge.NewSdk(reforge.WithEnvLookup(&NoOpEnvLookup{}))
+func WithEnvLookup(envLookup EnvLookup) Option {
+	return func(o *options.Options) error {
+		o.CustomEnvLookup = envLookup
+		return nil
+	}
+}

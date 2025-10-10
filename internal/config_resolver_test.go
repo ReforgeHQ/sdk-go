@@ -447,6 +447,7 @@ func TestConfigResolver_ResolveValue(t *testing.T) {
 				RuleEvaluator:         mockConfigEvaluator,
 				WeightedValueResolver: mockWeightedValueResolver,
 				Decrypter:             mockDecrypter,
+				EnvLookup:             &internal.RealEnvLookup{},
 			}
 
 			match, err := resolver.ResolveValue(testCase.configKey, mockContextGetter)
@@ -457,4 +458,134 @@ func TestConfigResolver_ResolveValue(t *testing.T) {
 			}
 		})
 	}
+}
+
+// mockEnvLookup is a mock implementation of EnvLookup for testing
+type mockEnvLookup struct {
+	values map[string]string
+}
+
+func (m *mockEnvLookup) LookupEnv(key string) (string, bool) {
+	val, ok := m.values[key]
+	return val, ok
+}
+
+func TestConfigResolver_CustomEnvLookup(t *testing.T) {
+	theKey := "the.key"
+	providedEnvVarName := "CUSTOM_ENV"
+	providedEnvVarValue := "CUSTOM_VALUE"
+	envVarSource := prefabProto.ProvidedSource_ENV_VAR
+
+	providedConfigValue := &prefabProto.ConfigValue{
+		Type: &prefabProto.ConfigValue_Provided{Provided: &prefabProto.Provided{Lookup: &providedEnvVarName, Source: &envVarSource}},
+	}
+
+	emptyConfigInstance := &prefabProto.Config{Key: theKey, ConfigType: prefabProto.ConfigType_CONFIG, ValueType: prefabProto.Config_STRING}
+
+	// Create a custom env lookup with specific values
+	customEnvLookup := &mockEnvLookup{
+		values: map[string]string{
+			"CUSTOM_ENV": "CUSTOM_VALUE",
+		},
+	}
+
+	mockConfigEvaluator := newMockConfigEvaluator([]mockConfigEvaluatorArgs{
+		{
+			config: emptyConfigInstance,
+			match: internal.ConditionMatch{
+				IsMatch:               true,
+				Match:                 providedConfigValue,
+				RowIndex:              internal.IntPtr(1),
+				ConditionalValueIndex: internal.IntPtr(1),
+			},
+		},
+	})
+	defer mockConfigEvaluator.AssertExpectations(t)
+
+	mockConfigStoreGetter := mocks.NewMockConfigStoreGetter([]mocks.ConfigMockingArgs{
+		{
+			ConfigKey:    theKey,
+			Config:       emptyConfigInstance,
+			ConfigExists: true,
+		},
+	})
+	defer mockConfigStoreGetter.AssertExpectations(t)
+
+	mockContextGetter := new(mocks.MockContextGetter)
+	defer mockContextGetter.AssertExpectations(t)
+
+	resolver := &internal.ConfigResolver{
+		ConfigStore:           mockConfigStoreGetter,
+		RuleEvaluator:         mockConfigEvaluator,
+		WeightedValueResolver: nil,
+		Decrypter:             nil,
+		EnvLookup:             customEnvLookup,
+	}
+
+	match, err := resolver.ResolveValue(theKey, mockContextGetter)
+
+	assert.NoError(t, err)
+	assert.True(t, match.IsMatch)
+	assert.Equal(t, theKey, match.ConfigKey)
+
+	// Verify the value was read from our custom env lookup, not the real environment
+	actualValue, ok := match.Match.GetType().(*prefabProto.ConfigValue_String_)
+	assert.True(t, ok, "Expected string type")
+	assert.Equal(t, providedEnvVarValue, actualValue.String_, "Expected value from custom env lookup")
+}
+
+func TestConfigResolver_CustomEnvLookupReturnsNotFound(t *testing.T) {
+	theKey := "the.key"
+	providedEnvVarName := "NONEXISTENT_ENV"
+	envVarSource := prefabProto.ProvidedSource_ENV_VAR
+
+	providedConfigValue := &prefabProto.ConfigValue{
+		Type: &prefabProto.ConfigValue_Provided{Provided: &prefabProto.Provided{Lookup: &providedEnvVarName, Source: &envVarSource}},
+	}
+
+	emptyConfigInstance := &prefabProto.Config{Key: theKey}
+
+	// Create a custom env lookup that always returns not found
+	customEnvLookup := &mockEnvLookup{
+		values: map[string]string{},
+	}
+
+	mockConfigEvaluator := newMockConfigEvaluator([]mockConfigEvaluatorArgs{
+		{
+			config: emptyConfigInstance,
+			match: internal.ConditionMatch{
+				IsMatch:               true,
+				Match:                 providedConfigValue,
+				RowIndex:              internal.IntPtr(1),
+				ConditionalValueIndex: internal.IntPtr(1),
+			},
+		},
+	})
+	defer mockConfigEvaluator.AssertExpectations(t)
+
+	mockConfigStoreGetter := mocks.NewMockConfigStoreGetter([]mocks.ConfigMockingArgs{
+		{
+			ConfigKey:    theKey,
+			Config:       emptyConfigInstance,
+			ConfigExists: true,
+		},
+	})
+	defer mockConfigStoreGetter.AssertExpectations(t)
+
+	mockContextGetter := new(mocks.MockContextGetter)
+	defer mockContextGetter.AssertExpectations(t)
+
+	resolver := &internal.ConfigResolver{
+		ConfigStore:           mockConfigStoreGetter,
+		RuleEvaluator:         mockConfigEvaluator,
+		WeightedValueResolver: nil,
+		Decrypter:             nil,
+		EnvLookup:             customEnvLookup,
+	}
+
+	_, err := resolver.ResolveValue(theKey, mockContextGetter)
+
+	// Should get an error because the env var doesn't exist in our custom lookup
+	assert.Error(t, err)
+	assert.Equal(t, internal.ErrEnvVarNotExist, err)
 }

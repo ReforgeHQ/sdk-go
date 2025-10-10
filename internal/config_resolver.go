@@ -132,7 +132,7 @@ func (c ConfigResolver) ResolveValueForConfig(config *prefabProto.Config, contex
 func (c ConfigResolver) handleProvided(provided *prefabProto.Provided) (string, bool) {
 	if provided.GetSource() == prefabProto.ProvidedSource_ENV_VAR {
 		if provided.Lookup != nil {
-			envValue, envValueExists := os.LookupEnv(provided.GetLookup())
+			envValue, envValueExists := c.EnvLookup.LookupEnv(provided.GetLookup())
 
 			return envValue, envValueExists
 		}
