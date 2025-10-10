@@ -140,6 +140,13 @@ func NewSdk(opts ...Option) (*Client, error) {
 
 	configResolver := internal.NewConfigResolver(configStore)
 
+	// Apply custom EnvLookup if provided
+	if options.CustomEnvLookup != nil {
+		if envLookup, ok := options.CustomEnvLookup.(internal.EnvLookup); ok {
+			configResolver.EnvLookup = envLookup
+		}
+	}
+
 	client = Client{
 		options:                &options,
 		configStore:            configStore,

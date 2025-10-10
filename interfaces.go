@@ -20,3 +20,9 @@ type ConfigStoreGetter interface {
 	ContextValueGetter
 	ProjectEnvIDSupplier
 }
+
+// EnvLookup defines the interface for looking up environment variables.
+// This allows the SDK to be used in embedded scenarios where direct environment access should be disabled.
+type EnvLookup interface {
+	LookupEnv(key string) (string, bool)
+}
