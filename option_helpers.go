@@ -230,3 +230,16 @@ func WithEnvLookup(envLookup EnvLookup) Option {
 		return nil
 	}
 }
+
+// WithLoggerKey sets a custom key for log level configuration.
+// The default value is "log-levels.default".
+//
+// Example:
+//
+//	client, err := reforge.NewSdk(reforge.WithLoggerKey("custom.log.key"))
+func WithLoggerKey(loggerKey string) Option {
+	return func(o *options.Options) error {
+		o.LoggerKey = loggerKey
+		return nil
+	}
+}
