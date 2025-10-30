@@ -57,6 +57,7 @@ type ClientInterface interface {
 	GetStringSliceValueWithDefault(key string, contextSet ContextSet, defaultValue []string) ([]string, bool)
 	GetDurationWithDefault(key string, contextSet ContextSet, defaultValue time.Duration) (time.Duration, bool)
 	GetLogLevelStringValue(key string, contextSet ContextSet) (string, bool, error)
+	GetLogLevel(loggerName string) LogLevel
 	GetJSONValue(key string, contextSet ContextSet) (interface{}, bool, error)
 	GetJSONValueWithDefault(key string, contextSet ContextSet, defaultValue interface{}) (interface{}, bool)
 	GetConfigMatch(key string, contextSet ContextSet) (*ConfigMatch, error)
@@ -251,6 +252,13 @@ func (c *Client) GetLogLevelStringValue(key string, contextSet ContextSet) (resu
 	return c.boundClient.GetLogLevelStringValue(key, contextSet)
 }
 
+// GetLogLevel returns the log level for a given logger name. It evaluates the logger key (from options)
+// with a context containing the logger name and returns the appropriate LogLevel. If no config is found or
+// an error occurs, it returns Debug as the default level.
+func (c *Client) GetLogLevel(loggerName string) LogLevel {
+	return c.boundClient.GetLogLevel(loggerName)
+}
+
 // WithContext returns a new ContextBoundClient bound to the provided context (merged with the parent context)
 func (c *Client) WithContext(contextSet *ContextSet) *ContextBoundClient {
 	mergedContext := contexts.Merge(c.options.GlobalContext, contextSet)
@@ -402,6 +410,38 @@ func (c *ContextBoundClient) GetLogLevelStringValue(key string, contextSet conte
 	}
 
 	return rawValue.String(), true, nil
+}
+
+// GetLogLevel returns the log level for a given logger name. It evaluates the logger key (from options)
+// with a context containing the logger name and returns the appropriate LogLevel. If no config is found,
+// the config is not LOG_LEVEL_V2 type, or an error occurs, it returns Debug as the default level.
+func (c *ContextBoundClient) GetLogLevel(loggerName string) LogLevel {
+	// Create context with reforge-sdk-logging
+	loggerContext := NewContextSet().WithNamedContextValues("reforge-sdk-logging", map[string]any{
+		"lang":        "go",
+		"logger-path": loggerName,
+	})
+
+	// Get the config match for the logger key
+	configMatch, err := c.GetConfigMatch(c.client.options.LoggerKey, *loggerContext)
+	if err != nil || configMatch == nil {
+		return Debug // Default to Debug if config not found or error
+	}
+
+	// Get the full config to check the type
+	config, found := c.GetConfig(c.client.options.LoggerKey)
+	if !found || config.ConfigType != prefabProto.ConfigType_LOG_LEVEL_V2 {
+		return Debug // Default to Debug if not LOG_LEVEL_V2 type
+	}
+
+	// Extract the log level value
+	protoLogLevel, ok := utils.ExtractLogLevelValue(configMatch.OriginalMatch)
+	if !ok {
+		return Debug // Default to Debug if extraction fails
+	}
+
+	// Convert proto LogLevel to our SDK LogLevel
+	return protoLogLevelToLogLevel(protoLogLevel)
 }
 
 // GetBoolValueWithDefault returns a bool value for a given key and context, with a default value if the key does not exist

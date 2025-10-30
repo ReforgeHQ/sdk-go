@@ -61,6 +61,7 @@ type Options struct {
 	TelemetrySyncInterval        time.Duration
 	TelemetryHost                string
 	InstanceHash                 string
+	LoggerKey                    string
 }
 
 const timeoutDefault = 10.0
@@ -97,6 +98,7 @@ func GetDefaultOptions() Options {
 		TelemetryHost:                "https://telemetry.reforge.com",
 		CollectEvaluationSummaries:   true,
 		InstanceHash:                 uuid.New().String(),
+		LoggerKey:                    "log-levels.default",
 	}
 }
 

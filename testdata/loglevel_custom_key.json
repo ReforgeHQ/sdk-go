@@ -1,0 +1,21 @@
+{
+  "configs": [
+    {
+      "id": "1",
+      "projectId": "1",
+      "key": "custom.log.key",
+      "configType": "LOG_LEVEL_V2",
+      "valueType": "LOG_LEVEL",
+      "rows": [
+        {
+          "values": [
+            {
+              "value": { "logLevel": "WARN" }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "configServicePointer": { "projectId": "1", "projectEnvId": "1" }
+}

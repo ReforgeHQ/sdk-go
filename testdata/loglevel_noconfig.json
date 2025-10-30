@@ -1,0 +1,21 @@
+{
+  "configs": [
+    {
+      "id": "1",
+      "projectId": "1",
+      "key": "some.other.config",
+      "configType": "CONFIG",
+      "valueType": "STRING",
+      "rows": [
+        {
+          "values": [
+            {
+              "value": { "string": "test" }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "configServicePointer": { "projectId": "1", "projectEnvId": "1" }
+}
