@@ -416,32 +416,51 @@ func (c *ContextBoundClient) GetLogLevelStringValue(key string, contextSet conte
 // with a context containing the logger name and returns the appropriate LogLevel. If no config is found,
 // the config is not LOG_LEVEL_V2 type, or an error occurs, it returns Debug as the default level.
 func (c *ContextBoundClient) GetLogLevel(loggerName string) LogLevel {
+	fmt.Printf("[GetLogLevel] Called with loggerName=%s, loggerKey=%s\n", loggerName, c.client.options.LoggerKey)
+
 	// Create context with reforge-sdk-logging
 	loggerContext := NewContextSet().WithNamedContextValues("reforge-sdk-logging", map[string]any{
 		"lang":        "go",
 		"logger-path": loggerName,
 	})
+	fmt.Printf("[GetLogLevel] Created context: %+v\n", loggerContext)
 
 	// Get the config match for the logger key
 	configMatch, err := c.GetConfigMatch(c.client.options.LoggerKey, *loggerContext)
-	if err != nil || configMatch == nil {
+	if err != nil {
+		fmt.Printf("[GetLogLevel] Error getting config match: %v, returning Debug\n", err)
 		return Debug // Default to Debug if config not found or error
 	}
+	if configMatch == nil {
+		fmt.Printf("[GetLogLevel] Config match is nil, returning Debug\n")
+		return Debug
+	}
+	fmt.Printf("[GetLogLevel] Got config match: %+v\n", configMatch)
 
 	// Get the full config to check the type
 	config, found := c.GetConfig(c.client.options.LoggerKey)
-	if !found || config.ConfigType != prefabProto.ConfigType_LOG_LEVEL_V2 {
+	if !found {
+		fmt.Printf("[GetLogLevel] Config not found for key %s, returning Debug\n", c.client.options.LoggerKey)
+		return Debug
+	}
+	if config.ConfigType != prefabProto.ConfigType_LOG_LEVEL_V2 {
+		fmt.Printf("[GetLogLevel] Config type is %v, not LOG_LEVEL_V2, returning Debug\n", config.ConfigType)
 		return Debug // Default to Debug if not LOG_LEVEL_V2 type
 	}
+	fmt.Printf("[GetLogLevel] Config type verified as LOG_LEVEL_V2\n")
 
 	// Extract the log level value
 	protoLogLevel, ok := utils.ExtractLogLevelValue(configMatch.OriginalMatch)
 	if !ok {
+		fmt.Printf("[GetLogLevel] Failed to extract log level value, returning Debug\n")
 		return Debug // Default to Debug if extraction fails
 	}
+	fmt.Printf("[GetLogLevel] Extracted proto log level: %v\n", protoLogLevel)
 
 	// Convert proto LogLevel to our SDK LogLevel
-	return protoLogLevelToLogLevel(protoLogLevel)
+	sdkLevel := protoLogLevelToLogLevel(protoLogLevel)
+	fmt.Printf("[GetLogLevel] Returning SDK log level: %v\n", sdkLevel)
+	return sdkLevel
 }
 
 // GetBoolValueWithDefault returns a bool value for a given key and context, with a default value if the key does not exist

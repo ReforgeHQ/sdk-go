@@ -3,6 +3,7 @@ package sse
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"log/slog"
 	"regexp"
 	"strconv"
@@ -78,7 +79,13 @@ func StartSSEConnection(client *sse.Client, apiConfigStore ConfigStore) {
 				return
 			}
 
+			fmt.Printf("[SSE] Received config update: %d configs, high_water_mark=%d\n", len(configs.GetConfigs()), apiConfigStore.GetHighWatermark())
+			for _, config := range configs.GetConfigs() {
+				fmt.Printf("[SSE]   - Config: key=%s, id=%d, type=%v\n", config.GetKey(), config.GetId(), config.ConfigType)
+			}
+
 			apiConfigStore.SetFromConfigsProto(&configs)
+			fmt.Printf("[SSE] Applied config update, new high_water_mark=%d\n", apiConfigStore.GetHighWatermark())
 		})
 		if err != nil {
 			slog.Error("sse:", "err", err.Error())
