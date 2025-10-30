@@ -1,17 +1,6 @@
-//go:build ignore
-// +build ignore
-
-package main
-
-// This example shows how to integrate Reforge log level management with zap.
-// Copy this code into your project and adapt as needed.
-//
-// Compatible with zap v1.10.0+ and uber-go/zap
-//
-// To use: go get go.uber.org/zap
+package zap
 
 import (
-	"os"
 	"time"
 
 	reforge "github.com/ReforgeHQ/sdk-go"
@@ -31,7 +20,7 @@ type ReforgeZapLevel struct {
 // Example:
 //
 //	client, _ := reforge.NewSdk(reforge.WithSdkKey("your-key"))
-//	dynamicLevel := NewReforgeZapLevel(client, "com.example.myapp")
+//	dynamicLevel := zap.NewReforgeZapLevel(client, "com.example.myapp")
 //	logger, _ := zap.NewProduction(zap.IncreaseLevel(dynamicLevel))
 func NewReforgeZapLevel(client reforge.ClientInterface, loggerName string) *ReforgeZapLevel {
 	return &ReforgeZapLevel{
@@ -82,7 +71,7 @@ type ReforgeAtomicLevel struct {
 // Example:
 //
 //	client, _ := reforge.NewSdk(reforge.WithSdkKey("your-key"))
-//	atomicLevel := NewReforgeAtomicLevel(client, "com.example.myapp", 30*time.Second)
+//	atomicLevel := zap.NewReforgeAtomicLevel(client, "com.example.myapp", 30*time.Second)
 //	defer atomicLevel.Stop()
 //
 //	config := zap.NewProductionConfig()
@@ -173,7 +162,7 @@ type ReforgeZapCore struct {
 //
 //	client, _ := reforge.NewSdk(reforge.WithSdkKey("your-key"))
 //	encoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
-//	core := NewReforgeZapCore(
+//	core := zap.NewReforgeZapCore(
 //	    zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel),
 //	    client,
 //	    "com.example.myapp",
@@ -231,130 +220,3 @@ func (c *ReforgeZapCore) reforgeToZapLevel(level reforge.LogLevel) zapcore.Level
 		return zapcore.DebugLevel
 	}
 }
-
-func main() {
-	// Initialize Reforge SDK
-	client, err := reforge.NewSdk(reforge.WithSdkKey("your-sdk-key"))
-	if err != nil {
-		panic(err)
-	}
-
-	// Approach 1: Using ReforgeZapLevel with IncreaseLevel
-	// This checks Reforge on every log call (most dynamic, slight performance cost)
-	dynamicLevel := NewReforgeZapLevel(client, "com.example.myapp")
-	logger1, _ := zap.NewProduction(zap.IncreaseLevel(dynamicLevel))
-	defer logger1.Sync()
-
-	logger1.Debug("Debug message - controlled by Reforge")
-	logger1.Info("Info message - controlled by Reforge")
-	logger1.Error("Error message - controlled by Reforge")
-
-	// Approach 2: Using ReforgeAtomicLevel with automatic updates
-	// This updates the level periodically (good balance of performance and dynamism)
-	atomicLevel := NewReforgeAtomicLevel(client, "com.example.myapp", 30*time.Second)
-	defer atomicLevel.Stop()
-
-	config := zap.NewProductionConfig()
-	config.Level = atomicLevel.AtomicLevel()
-	logger2, _ := config.Build()
-	defer logger2.Sync()
-
-	logger2.Debug("Debug message")
-	logger2.Info("Info message")
-
-	// Approach 3: Using ReforgeZapCore for fine-grained control
-	// This wraps the core directly
-	encoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
-	baseCore := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel)
-	reforgeCore := NewReforgeZapCore(baseCore, client, "com.example.myapp")
-	logger3 := zap.New(reforgeCore)
-	defer logger3.Sync()
-
-	logger3.Debug("Debug message from custom core")
-	logger3.Info("Info message from custom core")
-
-	// Approach 4: Multiple loggers for different components
-	dbLevel := NewReforgeZapLevel(client, "com.example.database")
-	dbLogger, _ := zap.NewProduction(
-		zap.IncreaseLevel(dbLevel),
-		zap.Fields(zap.String("component", "database")),
-	)
-	defer dbLogger.Sync()
-
-	apiLevel := NewReforgeZapLevel(client, "com.example.api")
-	apiLogger, _ := zap.NewProduction(
-		zap.IncreaseLevel(apiLevel),
-		zap.Fields(zap.String("component", "api")),
-	)
-	defer apiLogger.Sync()
-
-	dbLogger.Debug("Database query executed", zap.Duration("duration", 42*time.Millisecond))
-	apiLogger.Info("API request received", zap.String("method", "GET"))
-
-	// You can also manually trigger level updates:
-	// atomicLevel.updateLevel()
-}
-
-/* Configuration in Reforge:
-
-Create a LOG_LEVEL_V2 config with key "log-levels.default":
-
-{
-  "rows": [
-    {
-      "values": [
-        {
-          "criteria": [
-            {
-              "operator": "PROP_IS_ONE_OF",
-              "property_name": "reforge-sdk-logging.logger-path",
-              "value_to_match": {
-                "string_list": {
-                  "values": ["com.example.myapp"]
-                }
-              }
-            }
-          ],
-          "value": { "log_level": "DEBUG" }
-        },
-        {
-          "criteria": [
-            {
-              "operator": "PROP_IS_ONE_OF",
-              "property_name": "reforge-sdk-logging.logger-path",
-              "value_to_match": {
-                "string_list": {
-                  "values": ["com.example.database"]
-                }
-              }
-            }
-          ],
-          "value": { "log_level": "INFO" }
-        },
-        {
-          "criteria": [
-            {
-              "operator": "PROP_IS_ONE_OF",
-              "property_name": "reforge-sdk-logging.logger-path",
-              "value_to_match": {
-                "string_list": {
-                  "values": ["com.example.api"]
-                }
-              }
-            }
-          ],
-          "value": { "log_level": "WARN" }
-        }
-      ],
-      "value": { "log_level": "INFO" }
-    }
-  ]
-}
-
-Change these levels in Reforge to dynamically control your application's logging!
-
-Performance Notes:
-- ReforgeZapLevel: Checks on every log call (most dynamic, slight overhead)
-- ReforgeAtomicLevel: Updates periodically (good balance)
-- ReforgeZapCore: Checks on every log call, more control over core behavior
-*/

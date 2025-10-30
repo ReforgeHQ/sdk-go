@@ -1,18 +1,7 @@
-//go:build ignore
-// +build ignore
-
-package main
-
-// This example shows how to integrate Reforge log level management with zerolog.
-// Copy this code into your project and adapt as needed.
-//
-// Compatible with zerolog v1.15.0+
-//
-// To use: go get github.com/rs/zerolog
+package zerolog
 
 import (
 	"io"
-	"os"
 
 	reforge "github.com/ReforgeHQ/sdk-go"
 	"github.com/rs/zerolog"
@@ -32,7 +21,7 @@ type ReforgeZerologHook struct {
 // Example:
 //
 //	client, _ := reforge.NewSdk(reforge.WithSdkKey("your-key"))
-//	hook := NewReforgeZerologHook(client, "com.example.myapp")
+//	hook := zerolog.NewReforgeZerologHook(client, "com.example.myapp")
 //	logger := zerolog.New(os.Stdout).Hook(hook)
 func NewReforgeZerologHook(client reforge.ClientInterface, loggerName string) *ReforgeZerologHook {
 	return &ReforgeZerologHook{
@@ -86,7 +75,7 @@ type ReforgeZerologLevelWriter struct {
 // Example:
 //
 //	client, _ := reforge.NewSdk(reforge.WithSdkKey("your-key"))
-//	levelWriter := NewReforgeZerologLevelWriter(client, "com.example.myapp", os.Stdout)
+//	levelWriter := zerolog.NewReforgeZerologLevelWriter(client, "com.example.myapp", os.Stdout)
 //	logger := zerolog.New(levelWriter)
 func NewReforgeZerologLevelWriter(client reforge.ClientInterface, loggerName string, writer io.Writer) *ReforgeZerologLevelWriter {
 	return &ReforgeZerologLevelWriter{
@@ -127,102 +116,3 @@ func (w *ReforgeZerologLevelWriter) reforgeToZerologLevel(level reforge.LogLevel
 		return zerolog.DebugLevel
 	}
 }
-
-func main() {
-	// Initialize Reforge SDK
-	client, err := reforge.NewSdk(reforge.WithSdkKey("your-sdk-key"))
-	if err != nil {
-		panic(err)
-	}
-
-	// Approach 1: Using Hook (checks level on every log event)
-	hook := NewReforgeZerologHook(client, "com.example.myapp")
-	logger1 := zerolog.New(os.Stdout).Hook(hook).With().Timestamp().Logger()
-
-	logger1.Debug().Msg("Debug message - controlled by Reforge")
-	logger1.Info().Msg("Info message - controlled by Reforge")
-	logger1.Error().Msg("Error message - controlled by Reforge")
-
-	// Approach 2: Using LevelWriter with periodic level updates
-	// This is more efficient as it sets the level once rather than checking on each event
-	levelWriter := NewReforgeZerologLevelWriter(client, "com.example.myapp", os.Stdout)
-	logger2 := zerolog.New(levelWriter).
-		Level(levelWriter.GetDynamicLevel()).
-		With().
-		Timestamp().
-		Logger()
-
-	logger2.Debug().Msg("Debug message")
-	logger2.Info().Msg("Info message")
-
-	// You can update the level periodically:
-	// ticker := time.NewTicker(30 * time.Second)
-	// go func() {
-	//     for range ticker.C {
-	//         logger2 = logger2.Level(levelWriter.GetDynamicLevel())
-	//     }
-	// }()
-
-	// Approach 3: Multiple loggers for different components
-	dbLogger := zerolog.New(os.Stdout).
-		Hook(NewReforgeZerologHook(client, "com.example.database")).
-		With().
-		Str("component", "database").
-		Timestamp().
-		Logger()
-
-	apiLogger := zerolog.New(os.Stdout).
-		Hook(NewReforgeZerologHook(client, "com.example.api")).
-		With().
-		Str("component", "api").
-		Timestamp().
-		Logger()
-
-	dbLogger.Debug().Msg("Database query executed")
-	apiLogger.Info().Msg("API request received")
-}
-
-/* Configuration in Reforge:
-
-Create a LOG_LEVEL_V2 config with key "log-levels.default":
-
-{
-  "rows": [
-    {
-      "values": [
-        {
-          "criteria": [
-            {
-              "operator": "PROP_IS_ONE_OF",
-              "property_name": "reforge-sdk-logging.logger-path",
-              "value_to_match": {
-                "string_list": {
-                  "values": ["com.example.myapp"]
-                }
-              }
-            }
-          ],
-          "value": { "log_level": "DEBUG" }
-        },
-        {
-          "criteria": [
-            {
-              "operator": "PROP_IS_ONE_OF",
-              "property_name": "reforge-sdk-logging.logger-path",
-              "value_to_match": {
-                "string_list": {
-                  "values": ["com.example.database"]
-                }
-              }
-            }
-          ],
-          "value": { "log_level": "INFO" }
-        }
-      ],
-      "value": { "log_level": "WARN" }
-    }
-  ]
-}
-
-Change these levels in Reforge to dynamically control your application's logging!
-*/
