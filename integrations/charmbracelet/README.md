@@ -1,6 +1,6 @@
 # Charmbracelet Log Integration
 
-Integration for [charmbracelet/log](https://github.com/charmbracelet/log) with dynamic log level control from Reforge.
+Integration for [charmbracelet/log](https://github.com/charmbracelet/log) with real-time dynamic log level control from Reforge.
 
 ## Installation
 
@@ -19,48 +19,55 @@ import (
 
 client, _ := reforge.NewSdk(reforge.WithSdkKey("your-key"))
 
-// Approach 1: Wrapped logger with per-call level checking
+// Create a Reforge-wrapped logger
 baseLogger := log.New(os.Stdout)
 logger := charmbracelet.NewReforgeCharmLogger(client, baseLogger, "com.example.myapp")
-logger.Info("Dynamic logging!", "controlled_by", "reforge")
 
-// Approach 2: Automatic background updates
-logger := log.New(os.Stdout)
-atomicLevel := charmbracelet.NewReforgeAtomicLevel(client, logger, "com.example.myapp", 30*time.Second)
-defer atomicLevel.Stop()
+// Log messages are filtered in real-time based on Reforge configuration
+logger.Debug("Debug message")
+logger.Info("Info message", "key", "value")
+logger.Error("Error message")
 ```
+
+## How It Works
+
+The `ReforgeCharmLogger` wraps a charmbracelet logger and checks the Reforge configuration **on every log call** for real-time log level updates. When you change the log level in Reforge, it takes effect immediately via SSE without any polling or manual updates.
 
 ## API
 
-### ReforgeLevelFunc
+### NewReforgeCharmLogger
 
-Sets the initial level and allows manual updates:
-
-```go
-levelFunc := charmbracelet.NewReforgeLevelFunc(client, "com.example.myapp")
-logger := log.NewWithOptions(os.Stdout, log.Options{
-    Level: levelFunc.GetLevel(),
-})
-// Update manually: logger.SetLevel(levelFunc.GetLevel())
-```
-
-### ReforgeCharmLogger
-
-Wraps a charmbracelet logger and checks Reforge on every log call (most dynamic):
+Creates a logger that queries Reforge for the log level on each log call:
 
 ```go
 logger := charmbracelet.NewReforgeCharmLogger(client, baseLogger, "com.example.myapp")
 logger.Info("Checked on every call")
-logger.With("key", "value").Debug("Supports structured logging")
 ```
 
-### ReforgeAtomicLevel
+### Structured Logging
 
-Automatically updates the log level in the background at intervals:
+Supports all charmbracelet/log features:
 
 ```go
-atomicLevel := charmbracelet.NewReforgeAtomicLevel(client, logger, "com.example.myapp", 30*time.Second)
-defer atomicLevel.Stop()
+// Add context
+requestLogger := logger.With("request_id", "abc-123", "user_id", "user-456")
+requestLogger.Info("Processing request", "endpoint", "/api/data")
+
+// Add prefix
+serviceLogger := logger.WithPrefix("payment-service")
+serviceLogger.Info("Payment processed", "amount", 99.99)
+```
+
+### Multiple Loggers
+
+Different components can have different log levels:
+
+```go
+dbLogger := charmbracelet.NewReforgeCharmLogger(client, baseLogger, "com.example.database")
+apiLogger := charmbracelet.NewReforgeCharmLogger(client, baseLogger, "com.example.api")
+
+dbLogger.Debug("Database query") // Filtered based on com.example.database
+apiLogger.Info("API request")     // Filtered based on com.example.api
 ```
 
 ## Examples
@@ -70,3 +77,5 @@ See [example_test.go](./example_test.go) for complete examples.
 ## Configuration
 
 Configure log levels in Reforge using LOG_LEVEL_V2. See the [parent README](../README.md) for configuration format.
+
+Changes to log levels in Reforge are propagated to your application in real-time via SSE, with no polling or restart required.

@@ -3,63 +3,14 @@ package charmbracelet
 import (
 	"context"
 	"io"
-	"time"
 
 	reforge "github.com/ReforgeHQ/sdk-go"
 	"github.com/charmbracelet/log"
 )
 
-// ReforgeLevelFunc provides dynamic log level control for charmbracelet/log
-// based on Reforge configuration.
-type ReforgeLevelFunc struct {
-	client     reforge.ClientInterface
-	loggerName string
-}
-
-// NewReforgeLevelFunc creates a new ReforgeLevelFunc that queries Reforge for log levels.
-//
-// Example:
-//
-//	client, _ := reforge.NewSdk(reforge.WithSdkKey("your-key"))
-//	levelFunc := charmbracelet.NewReforgeLevelFunc(client, "com.example.myapp")
-//	logger := log.NewWithOptions(os.Stdout, log.Options{
-//	    Level: levelFunc.GetLevel(),
-//	})
-func NewReforgeLevelFunc(client reforge.ClientInterface, loggerName string) *ReforgeLevelFunc {
-	return &ReforgeLevelFunc{
-		client:     client,
-		loggerName: loggerName,
-	}
-}
-
-// GetLevel returns the current log level from Reforge configuration.
-func (l *ReforgeLevelFunc) GetLevel() log.Level {
-	reforgeLevel := l.client.GetLogLevel(l.loggerName)
-	return l.reforgeToCharmLogLevel(reforgeLevel)
-}
-
-// reforgeToCharmLogLevel converts a Reforge LogLevel to charmbracelet log.Level
-func (l *ReforgeLevelFunc) reforgeToCharmLogLevel(level reforge.LogLevel) log.Level {
-	switch level {
-	case reforge.Trace:
-		return log.DebugLevel - 1 // Trace is more verbose than Debug
-	case reforge.Debug:
-		return log.DebugLevel
-	case reforge.Info:
-		return log.InfoLevel
-	case reforge.Warn:
-		return log.WarnLevel
-	case reforge.Error:
-		return log.ErrorLevel
-	case reforge.Fatal:
-		return log.FatalLevel
-	default:
-		return log.DebugLevel
-	}
-}
-
 // ReforgeCharmLogger wraps a charmbracelet log.Logger and provides dynamic
-// log level filtering based on Reforge configuration.
+// log level filtering based on Reforge configuration. It checks the Reforge
+// configuration on every log call for real-time log level updates.
 type ReforgeCharmLogger struct {
 	logger     *log.Logger
 	client     reforge.ClientInterface
@@ -188,74 +139,5 @@ func (l *ReforgeCharmLogger) WithContext(ctx context.Context) *ReforgeCharmLogge
 		logger:     log.FromContext(ctx),
 		client:     l.client,
 		loggerName: l.loggerName,
-	}
-}
-
-// ReforgeAtomicLevel wraps a charmbracelet logger and provides automatic updates
-// from Reforge configuration at regular intervals.
-type ReforgeAtomicLevel struct {
-	logger    *log.Logger
-	client    reforge.ClientInterface
-	loggerName string
-	stopChan  chan struct{}
-	levelFunc *ReforgeLevelFunc
-}
-
-// NewReforgeAtomicLevel creates a new atomic level that automatically updates
-// from Reforge configuration at the specified interval.
-//
-// Example:
-//
-//	client, _ := reforge.NewSdk(reforge.WithSdkKey("your-key"))
-//	logger := log.New(os.Stdout)
-//	atomicLevel := charmbracelet.NewReforgeAtomicLevel(client, logger, "com.example.myapp", 30*time.Second)
-//	defer atomicLevel.Stop()
-func NewReforgeAtomicLevel(client reforge.ClientInterface, logger *log.Logger, loggerName string, updateInterval time.Duration) *ReforgeAtomicLevel {
-	levelFunc := NewReforgeLevelFunc(client, loggerName)
-	ral := &ReforgeAtomicLevel{
-		logger:     logger,
-		client:     client,
-		loggerName: loggerName,
-		stopChan:   make(chan struct{}),
-		levelFunc:  levelFunc,
-	}
-
-	// Set initial level
-	ral.updateLevel()
-
-	// Start background updater
-	go ral.backgroundUpdater(updateInterval)
-
-	return ral
-}
-
-// Logger returns the underlying logger
-func (r *ReforgeAtomicLevel) Logger() *log.Logger {
-	return r.logger
-}
-
-// Stop stops the background level updater
-func (r *ReforgeAtomicLevel) Stop() {
-	close(r.stopChan)
-}
-
-// updateLevel fetches the current level from Reforge and updates the logger
-func (r *ReforgeAtomicLevel) updateLevel() {
-	level := r.levelFunc.GetLevel()
-	r.logger.SetLevel(level)
-}
-
-// backgroundUpdater periodically updates the log level from Reforge
-func (r *ReforgeAtomicLevel) backgroundUpdater(interval time.Duration) {
-	ticker := time.NewTicker(interval)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ticker.C:
-			r.updateLevel()
-		case <-r.stopChan:
-			return
-		}
 	}
 }

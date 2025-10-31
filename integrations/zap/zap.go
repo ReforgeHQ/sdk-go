@@ -1,10 +1,7 @@
 package zap
 
 import (
-	"time"
-
 	reforge "github.com/ReforgeHQ/sdk-go"
-	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
@@ -41,97 +38,6 @@ func (l *ReforgeZapLevel) reforgeToZapLevel(level reforge.LogLevel) zapcore.Leve
 	switch level {
 	case reforge.Trace:
 		return zapcore.DebugLevel - 1 // Lower than debug
-	case reforge.Debug:
-		return zapcore.DebugLevel
-	case reforge.Info:
-		return zapcore.InfoLevel
-	case reforge.Warn:
-		return zapcore.WarnLevel
-	case reforge.Error:
-		return zapcore.ErrorLevel
-	case reforge.Fatal:
-		return zapcore.FatalLevel
-	default:
-		return zapcore.DebugLevel
-	}
-}
-
-// ReforgeAtomicLevel wraps zap.AtomicLevel and provides automatic updates
-// from Reforge configuration.
-type ReforgeAtomicLevel struct {
-	client     reforge.ClientInterface
-	loggerName string
-	atomic     zap.AtomicLevel
-	stopChan   chan struct{}
-}
-
-// NewReforgeAtomicLevel creates a new atomic level that automatically updates
-// from Reforge configuration at the specified interval.
-//
-// Example:
-//
-//	client, _ := reforge.NewSdk(reforge.WithSdkKey("your-key"))
-//	atomicLevel := zap.NewReforgeAtomicLevel(client, "com.example.myapp", 30*time.Second)
-//	defer atomicLevel.Stop()
-//
-//	config := zap.NewProductionConfig()
-//	config.Level = atomicLevel.AtomicLevel()
-//	logger, _ := config.Build()
-func NewReforgeAtomicLevel(client reforge.ClientInterface, loggerName string, updateInterval time.Duration) *ReforgeAtomicLevel {
-	atomic := zap.NewAtomicLevel()
-	ral := &ReforgeAtomicLevel{
-		client:     client,
-		loggerName: loggerName,
-		atomic:     atomic,
-		stopChan:   make(chan struct{}),
-	}
-
-	// Set initial level
-	ral.updateLevel()
-
-	// Start background updater
-	go ral.backgroundUpdater(updateInterval)
-
-	return ral
-}
-
-// AtomicLevel returns the underlying zap.AtomicLevel
-func (r *ReforgeAtomicLevel) AtomicLevel() zap.AtomicLevel {
-	return r.atomic
-}
-
-// Stop stops the background level updater
-func (r *ReforgeAtomicLevel) Stop() {
-	close(r.stopChan)
-}
-
-// updateLevel fetches the current level from Reforge and updates the atomic level
-func (r *ReforgeAtomicLevel) updateLevel() {
-	reforgeLevel := r.client.GetLogLevel(r.loggerName)
-	zapLevel := r.reforgeToZapLevel(reforgeLevel)
-	r.atomic.SetLevel(zapLevel)
-}
-
-// backgroundUpdater periodically updates the log level from Reforge
-func (r *ReforgeAtomicLevel) backgroundUpdater(interval time.Duration) {
-	ticker := time.NewTicker(interval)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ticker.C:
-			r.updateLevel()
-		case <-r.stopChan:
-			return
-		}
-	}
-}
-
-// reforgeToZapLevel converts a Reforge LogLevel to zapcore.Level
-func (r *ReforgeAtomicLevel) reforgeToZapLevel(level reforge.LogLevel) zapcore.Level {
-	switch level {
-	case reforge.Trace:
-		return zapcore.DebugLevel - 1
 	case reforge.Debug:
 		return zapcore.DebugLevel
 	case reforge.Info:

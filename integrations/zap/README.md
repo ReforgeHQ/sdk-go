@@ -1,6 +1,6 @@
 # Zap Integration
 
-Integration for [uber-go/zap](https://github.com/uber-go/zap) with dynamic log level control from Reforge.
+Integration for [uber-go/zap](https://github.com/uber-go/zap) with real-time dynamic log level control from Reforge.
 
 ## Installation
 
@@ -19,18 +19,21 @@ import (
 
 client, _ := reforge.NewSdk(reforge.WithSdkKey("your-key"))
 
-// Approach 1: Dynamic level checking on each log
+// Approach 1: Using ReforgeZapLevel with IncreaseLevel
 dynamicLevel := reforgezap.NewReforgeZapLevel(client, "com.example.myapp")
 logger, _ := zap.NewProduction(zap.IncreaseLevel(dynamicLevel))
 logger.Info("Dynamic logging!")
 
-// Approach 2: Automatic background updates
-atomicLevel := reforgezap.NewReforgeAtomicLevel(client, "com.example.myapp", 30*time.Second)
-defer atomicLevel.Stop()
-config := zap.NewProductionConfig()
-config.Level = atomicLevel.AtomicLevel()
-logger, _ := config.Build()
+// Approach 2: Using ReforgeZapCore for fine-grained control
+encoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
+baseCore := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel)
+core := reforgezap.NewReforgeZapCore(baseCore, client, "com.example.myapp")
+logger := zap.New(core)
 ```
+
+## How It Works
+
+Both approaches check Reforge configuration **on every log call** for real-time log level updates. When you change the log level in Reforge, it takes effect immediately via SSE without any polling or manual updates.
 
 ## API
 
@@ -43,22 +46,6 @@ dynamicLevel := reforgezap.NewReforgeZapLevel(client, "com.example.myapp")
 logger, _ := zap.NewProduction(zap.IncreaseLevel(dynamicLevel))
 ```
 
-Most dynamic approach - instant updates, slight performance cost.
-
-### ReforgeAtomicLevel
-
-Wraps `zap.AtomicLevel` and updates periodically in the background:
-
-```go
-atomicLevel := reforgezap.NewReforgeAtomicLevel(client, "com.example.myapp", 30*time.Second)
-defer atomicLevel.Stop()
-config := zap.NewProductionConfig()
-config.Level = atomicLevel.AtomicLevel()
-logger, _ := config.Build()
-```
-
-Good balance of performance and dynamism.
-
 ### ReforgeZapCore
 
 Wraps a `zapcore.Core` for fine-grained control:
@@ -70,6 +57,15 @@ core := reforgezap.NewReforgeZapCore(baseCore, client, "com.example.myapp")
 logger := zap.New(core)
 ```
 
+### Multiple Loggers
+
+Different components can have different log levels:
+
+```go
+dbLevel := reforgezap.NewReforgeZapLevel(client, "com.example.database")
+apiLevel := reforgezap.NewReforgeZapLevel(client, "com.example.api")
+```
+
 ## Examples
 
 See [example_test.go](./example_test.go) for complete examples.
@@ -78,8 +74,4 @@ See [example_test.go](./example_test.go) for complete examples.
 
 Configure log levels in Reforge using LOG_LEVEL_V2. See the [parent README](../README.md) for configuration format.
 
-## Performance Notes
-
-- **ReforgeZapLevel**: Checks on every log call (most dynamic, slight overhead)
-- **ReforgeAtomicLevel**: Updates periodically (good balance)
-- **ReforgeZapCore**: Checks on every log call, more control over core behavior
+Changes to log levels in Reforge are propagated to your application in real-time via SSE, with no polling or restart required.

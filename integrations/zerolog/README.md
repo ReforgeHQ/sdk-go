@@ -1,6 +1,6 @@
 # Zerolog Integration
 
-Integration for [rs/zerolog](https://github.com/rs/zerolog) with dynamic log level control from Reforge.
+Integration for [rs/zerolog](https://github.com/rs/zerolog) with real-time dynamic log level control from Reforge.
 
 ## Installation
 
@@ -19,55 +19,64 @@ import (
 
 client, _ := reforge.NewSdk(reforge.WithSdkKey("your-key"))
 
-// Approach 1: Hook-based (checks on every log event)
+// Create a Reforge-controlled logger
 hook := reforgezerolog.NewReforgeZerologHook(client, "com.example.myapp")
 logger := zerolog.New(os.Stdout).Hook(hook).With().Timestamp().Logger()
-logger.Info().Msg("Dynamic logging!")
 
-// Approach 2: LevelWriter (more efficient, set level periodically)
-levelWriter := reforgezerolog.NewReforgeZerologLevelWriter(client, "com.example.myapp", os.Stdout)
-logger := zerolog.New(levelWriter).
-    Level(levelWriter.GetDynamicLevel()).
-    With().
-    Timestamp().
-    Logger()
+// Log messages are filtered in real-time based on Reforge configuration
+logger.Debug().Msg("Debug message")
+logger.Info().Msg("Info message")
+logger.Error().Msg("Error message")
 ```
+
+## How It Works
+
+The `ReforgeZerologHook` checks the Reforge configuration **on every log event** for real-time log level updates. When you change the log level in Reforge, it takes effect immediately via SSE without any polling or manual updates.
 
 ## API
 
-### ReforgeZerologHook
+### NewReforgeZerologHook
 
-Implements `zerolog.Hook` and checks Reforge on every log event:
+Creates a hook that queries Reforge for the log level on each log event:
 
 ```go
 hook := reforgezerolog.NewReforgeZerologHook(client, "com.example.myapp")
 logger := zerolog.New(os.Stdout).Hook(hook).With().Timestamp().Logger()
+logger.Info().Msg("Checked on every log event")
 ```
 
-Most dynamic approach - filters events based on current Reforge configuration.
+### Structured Logging
 
-### ReforgeZerologLevelWriter
-
-Wraps an `io.Writer` and provides level querying:
+Supports all zerolog features:
 
 ```go
-levelWriter := reforgezerolog.NewReforgeZerologLevelWriter(client, "com.example.myapp", os.Stdout)
-logger := zerolog.New(levelWriter).
-    Level(levelWriter.GetDynamicLevel()).
-    With().
-    Timestamp().
-    Logger()
+// Add context
+logger.Info().
+    Str("request_id", "abc-123").
+    Str("user_id", "user-456").
+    Msg("Processing request")
 
-// Update level periodically:
-ticker := time.NewTicker(30 * time.Second)
-go func() {
-    for range ticker.C {
-        logger = logger.Level(levelWriter.GetDynamicLevel())
-    }
-}()
+// Sub-loggers
+subLogger := logger.With().Str("component", "database").Logger()
+subLogger.Debug().Msg("Database query")
 ```
 
-More efficient - set the level once rather than checking on each event.
+### Multiple Loggers
+
+Different components can have different log levels:
+
+```go
+dbLogger := zerolog.New(os.Stdout).
+    Hook(reforgezerolog.NewReforgeZerologHook(client, "com.example.database")).
+    With().Timestamp().Logger()
+
+apiLogger := zerolog.New(os.Stdout).
+    Hook(reforgezerolog.NewReforgeZerologHook(client, "com.example.api")).
+    With().Timestamp().Logger()
+
+dbLogger.Debug().Msg("Database query") // Filtered based on com.example.database
+apiLogger.Info().Msg("API request")    // Filtered based on com.example.api
+```
 
 ## Examples
 
@@ -77,7 +86,4 @@ See [example_test.go](./example_test.go) for complete examples.
 
 Configure log levels in Reforge using LOG_LEVEL_V2. See the [parent README](../README.md) for configuration format.
 
-## Performance Notes
-
-- **ReforgeZerologHook**: Checks on every log event (most dynamic)
-- **ReforgeZerologLevelWriter**: Set level once, update manually or periodically (better performance)
+Changes to log levels in Reforge are propagated to your application in real-time via SSE, with no polling or restart required.

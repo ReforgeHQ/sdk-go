@@ -2,7 +2,6 @@ package zap_test
 
 import (
 	"os"
-	"time"
 
 	reforge "github.com/ReforgeHQ/sdk-go"
 	reforgezap "github.com/ReforgeHQ/sdk-go/integrations/zap"
@@ -18,7 +17,7 @@ func Example_reforgeZapLevel() {
 	}
 
 	// Using ReforgeZapLevel with IncreaseLevel
-	// This checks Reforge on every log call (most dynamic, slight performance cost)
+	// This checks Reforge on every log call for real-time dynamic control
 	dynamicLevel := reforgezap.NewReforgeZapLevel(client, "com.example.myapp")
 	logger, _ := zap.NewProduction(zap.IncreaseLevel(dynamicLevel))
 	defer logger.Sync()
@@ -26,27 +25,6 @@ func Example_reforgeZapLevel() {
 	logger.Debug("Debug message - controlled by Reforge")
 	logger.Info("Info message - controlled by Reforge")
 	logger.Error("Error message - controlled by Reforge")
-}
-
-func Example_reforgeAtomicLevel() {
-	// Initialize Reforge SDK
-	client, err := reforge.NewSdk(reforge.WithSdkKey("your-sdk-key"))
-	if err != nil {
-		panic(err)
-	}
-
-	// Using ReforgeAtomicLevel with automatic updates
-	// This updates the level periodically (good balance of performance and dynamism)
-	atomicLevel := reforgezap.NewReforgeAtomicLevel(client, "com.example.myapp", 30*time.Second)
-	defer atomicLevel.Stop()
-
-	config := zap.NewProductionConfig()
-	config.Level = atomicLevel.AtomicLevel()
-	logger, _ := config.Build()
-	defer logger.Sync()
-
-	logger.Debug("Debug message")
-	logger.Info("Info message")
 }
 
 func Example_reforgeZapCore() {
@@ -90,6 +68,6 @@ func Example_multipleLoggers() {
 	)
 	defer apiLogger.Sync()
 
-	dbLogger.Debug("Database query executed", zap.Duration("duration", 42*time.Millisecond))
+	dbLogger.Debug("Database query executed", zap.Int("duration_ms", 42))
 	apiLogger.Info("API request received", zap.String("method", "GET"))
 }
