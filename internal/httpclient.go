@@ -31,15 +31,10 @@ func BuildHTTPClient(options options.Options) (*HTTPClient, error) {
 }
 
 func (c *HTTPClient) Load(offset int64) (*prefabProto.Configs, error) {
-	sdkKey, err := c.Options.SdkKeySettingOrEnvVar()
-	if err != nil {
-		return nil, err
-	}
-
 	for _, url := range c.URLs {
 		uri := fmt.Sprintf("%s/api/v2/configs/%d", url, offset)
 
-		configs, err := c.LoadFromURI(uri, sdkKey, offset)
+		configs, err := c.LoadFromURI(uri, c.Options.SdkKey, offset)
 		if err != nil {
 			slog.Error("Error loading from URI", "err", err)
 

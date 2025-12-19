@@ -1,6 +1,7 @@
 package sse_test
 
 import (
+	"os"
 	"testing"
 
 	r3sse "github.com/r3labs/sse/v2"
@@ -56,4 +57,51 @@ func TestEventHandlerIgnoresEmptyEvents(t *testing.T) {
 	// by ensuring that empty data doesn't cause base64 decode errors
 	assert.Equal(t, 0, len(emptyEvent.Data))
 	assert.Nil(t, store.lastConfigs)
+}
+
+func TestBuildSSEClientWithEnvVar(t *testing.T) {
+	// Test that BuildSSEClient correctly falls back to environment variable
+	// when SdkKey is not set in options (reproduces customer bug report)
+
+	// Set env var
+	envKey := "test-env-sdk-key"
+	os.Setenv(options.SdkKeyEnvVar, envKey)
+	defer os.Unsetenv(options.SdkKeyEnvVar)
+
+	opts := options.Options{
+		SdkKey:  "", // Empty - should fall back to env var
+		APIURLs: []string{"https://primary.reforge.com"},
+	}
+
+	client, err := sse.BuildSSEClient(opts)
+
+	assert.NoError(t, err)
+	assert.Equal(t, "https://stream.reforge.com/api/v2/sse/config", client.URL)
+
+	// Verify auth header uses the env var key
+	expectedAuth := "Basic YXV0aHVzZXI6dGVzdC1lbnYtc2RrLWtleQ==" // base64("authuser:test-env-sdk-key")
+	assert.Equal(t, expectedAuth, client.Headers["Authorization"])
+}
+
+func TestBuildSSEClientExplicitKeyTakesPrecedence(t *testing.T) {
+	// Test that explicit SdkKey takes precedence over env var
+
+	// Set env var
+	envKey := "env-key"
+	os.Setenv(options.SdkKeyEnvVar, envKey)
+	defer os.Unsetenv(options.SdkKeyEnvVar)
+
+	explicitKey := "explicit-key"
+	opts := options.Options{
+		SdkKey:  explicitKey,
+		APIURLs: []string{"https://primary.reforge.com"},
+	}
+
+	client, err := sse.BuildSSEClient(opts)
+
+	assert.NoError(t, err)
+
+	// Verify auth header uses the explicit key, not env var
+	expectedAuth := "Basic YXV0aHVzZXI6ZXhwbGljaXQta2V5" // base64("authuser:explicit-key")
+	assert.Equal(t, expectedAuth, client.Headers["Authorization"])
 }
