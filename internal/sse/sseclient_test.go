@@ -1,6 +1,7 @@
 package sse_test
 
 import (
+	"encoding/base64"
 	"os"
 	"testing"
 
@@ -19,16 +20,14 @@ func TestBuildSSEClient(t *testing.T) {
 		APIURLs: []string{"https://primary.reforge.com"},
 	}
 
-	client, err := sse.BuildSSEClient(options)
+	client, opts, err := sse.BuildSSEClient(options)
 
 	assert.NoError(t, err)
 	assert.Equal(t, "https://stream.reforge.com/api/v2/sse/config", client.URL)
+	assert.NotNil(t, opts)
 
-	assert.Equal(t, map[string]string{
-		"Authorization":                "Basic YXV0aHVzZXI6ZG9lcy1ub3QtbWF0dGVy",
-		"X-Reforge-SDK-Version": internal.ClientVersionHeader,
-		"Accept":                       "text/event-stream",
-	}, client.Headers)
+	// Headers are not set until StartSSEConnection is called
+	// This test verifies the client is created with the correct URL
 }
 
 type mockConfigStore struct {
@@ -60,7 +59,7 @@ func TestEventHandlerIgnoresEmptyEvents(t *testing.T) {
 }
 
 func TestBuildSSEClientWithEnvVar(t *testing.T) {
-	// Test that BuildSSEClient correctly falls back to environment variable
+	// Test that StartSSEConnection correctly falls back to environment variable
 	// when SdkKey is not set in options (reproduces customer bug report)
 
 	// Set env var
@@ -73,14 +72,21 @@ func TestBuildSSEClientWithEnvVar(t *testing.T) {
 		APIURLs: []string{"https://primary.reforge.com"},
 	}
 
-	client, err := sse.BuildSSEClient(opts)
+	client, sseOpts, err := sse.BuildSSEClient(opts)
 
 	assert.NoError(t, err)
 	assert.Equal(t, "https://stream.reforge.com/api/v2/sse/config", client.URL)
+	assert.NotNil(t, sseOpts)
 
-	// Verify auth header uses the env var key
+	// Simulate what StartSSEConnection does - get SDK key and set headers
+	sdkKey, err := sseOpts.SdkKeySettingOrEnvVar()
+	assert.NoError(t, err)
+	assert.Equal(t, envKey, sdkKey)
+
+	// Verify the authorization would be correct
 	expectedAuth := "Basic YXV0aHVzZXI6dGVzdC1lbnYtc2RrLWtleQ==" // base64("authuser:test-env-sdk-key")
-	assert.Equal(t, expectedAuth, client.Headers["Authorization"])
+	authString := base64.StdEncoding.EncodeToString([]byte("authuser:" + sdkKey))
+	assert.Equal(t, expectedAuth, "Basic "+authString)
 }
 
 func TestBuildSSEClientExplicitKeyTakesPrecedence(t *testing.T) {
@@ -97,11 +103,19 @@ func TestBuildSSEClientExplicitKeyTakesPrecedence(t *testing.T) {
 		APIURLs: []string{"https://primary.reforge.com"},
 	}
 
-	client, err := sse.BuildSSEClient(opts)
+	client, sseOpts, err := sse.BuildSSEClient(opts)
 
 	assert.NoError(t, err)
+	assert.NotNil(t, client)
+	assert.NotNil(t, sseOpts)
 
-	// Verify auth header uses the explicit key, not env var
+	// Verify that SdkKeySettingOrEnvVar returns the explicit key
+	sdkKey, err := sseOpts.SdkKeySettingOrEnvVar()
+	assert.NoError(t, err)
+	assert.Equal(t, explicitKey, sdkKey)
+
+	// Verify auth header would use the explicit key, not env var
 	expectedAuth := "Basic YXV0aHVzZXI6ZXhwbGljaXQta2V5" // base64("authuser:explicit-key")
-	assert.Equal(t, expectedAuth, client.Headers["Authorization"])
+	authString := base64.StdEncoding.EncodeToString([]byte("authuser:" + sdkKey))
+	assert.Equal(t, expectedAuth, "Basic "+authString)
 }

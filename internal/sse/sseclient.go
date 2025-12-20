@@ -18,33 +18,22 @@ import (
 
 var subdomainRegex = regexp.MustCompile(`(primary|secondary)\.`)
 
-func BuildSSEClient(options options.Options) (*sse.Client, error) {
+func BuildSSEClient(options options.Options) (*sse.Client, *options.Options, error) {
 	apiURLs, err := options.PrefabAPIURLEnvVarOrSetting()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if len(apiURLs) == 0 {
-		return nil, errors.New("no api urls provided")
+		return nil, nil, errors.New("no api urls provided")
 	}
-
-	sdkKey, err := options.SdkKeySettingOrEnvVar()
-	if err != nil {
-		return nil, err
-	}
-
-	authString := base64.StdEncoding.EncodeToString([]byte("authuser:" + sdkKey))
 
 	// TODO: handle multiple api urls
 	url := replaceFirstOccurrence(apiURLs[0], subdomainRegex, "stream.") + "/api/v2/sse/config"
 	client := sse.NewClient(url)
-	client.Headers = map[string]string{
-		"Authorization":                "Basic " + authString,
-		"X-Reforge-SDK-Version": internal.ClientVersionHeader,
-		"Accept":                       "text/event-stream",
-	}
 
-	return client, nil
+	// Return client and options - headers will be set when connecting
+	return client, &options, nil
 }
 
 type ConfigStore interface {
@@ -52,7 +41,23 @@ type ConfigStore interface {
 	GetHighWatermark() int64
 }
 
-func StartSSEConnection(client *sse.Client, apiConfigStore ConfigStore) {
+func StartSSEConnection(client *sse.Client, opts *options.Options, apiConfigStore ConfigStore) {
+	// Get SDK key when actually connecting
+	sdkKey, err := opts.SdkKeySettingOrEnvVar()
+	if err != nil {
+		slog.Error("sse: error getting SDK key", "err", err.Error())
+		return
+	}
+
+	authString := base64.StdEncoding.EncodeToString([]byte("authuser:" + sdkKey))
+
+	// Set headers once
+	client.Headers = map[string]string{
+		"Authorization":         "Basic " + authString,
+		"X-Reforge-SDK-Version": internal.ClientVersionHeader,
+		"Accept":                "text/event-stream",
+	}
+
 	for {
 		client.Headers["x-prefab-start-at-id"] = strconv.FormatInt(apiConfigStore.GetHighWatermark(), 10)
 

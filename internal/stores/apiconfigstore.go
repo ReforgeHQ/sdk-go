@@ -32,7 +32,7 @@ func NewAPIConfigStore(options options.Options, finishedLoading func()) (*APICon
 		panic(err)
 	}
 
-	sseClient, err := sse.BuildSSEClient(options)
+	sseClient, sseOpts, err := sse.BuildSSEClient(options)
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +48,7 @@ func NewAPIConfigStore(options options.Options, finishedLoading func()) (*APICon
 
 	go func() {
 		err = store.fetchFromServer(0, func() {
-			go sse.StartSSEConnection(sseClient, store)
+			go sse.StartSSEConnection(sseClient, sseOpts, store)
 		})
 		if err != nil {
 			slog.Error(fmt.Sprintf("error fetching from server: %v", err))
