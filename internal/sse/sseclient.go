@@ -28,7 +28,12 @@ func BuildSSEClient(options options.Options) (*sse.Client, error) {
 		return nil, errors.New("no api urls provided")
 	}
 
-	authString := base64.StdEncoding.EncodeToString([]byte("authuser:" + options.SdkKey))
+	sdkKey, err := options.SdkKeySettingOrEnvVar()
+	if err != nil {
+		return nil, err
+	}
+
+	authString := base64.StdEncoding.EncodeToString([]byte("authuser:" + sdkKey))
 
 	// TODO: handle multiple api urls
 	url := replaceFirstOccurrence(apiURLs[0], subdomainRegex, "stream.") + "/api/v2/sse/config"

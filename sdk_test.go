@@ -228,19 +228,3 @@ func TestSdkKeyExplicitTakesPrecedenceOverEnvVar(t *testing.T) {
 	assert.Equal(t, "test-value", value)
 }
 
-func TestSdkKeyMissingReturnsError(t *testing.T) {
-	// Verify that missing SDK key returns an error when no env var is set
-
-	// Make sure env var is not set
-	os.Unsetenv(options.SdkKeyEnvVar)
-	os.Unsetenv(options.LegacyApiKeyEnvVar)
-
-	// Try to create client without SDK key - this should fail immediately during NewSdk()
-	// because we normalize the SDK key before building stores
-	_, err := reforge.NewSdk(
-		reforge.WithInitializationTimeoutSeconds(1.0),
-	)
-
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "SDK key is not set")
-}

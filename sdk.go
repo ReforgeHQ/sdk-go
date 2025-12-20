@@ -97,13 +97,6 @@ func NewSdk(opts ...Option) (*Client, error) {
 		}
 	}
 
-	// Normalize SDK key from env var if not explicitly set
-	// This ensures all components can safely use options.SdkKey
-	_, err := options.SdkKeySettingOrEnvVar()
-	if err != nil {
-		return nil, err
-	}
-
 	slog.Debug("Initializing client", "options", options)
 
 	var configStores []internal.ConfigStoreGetter
