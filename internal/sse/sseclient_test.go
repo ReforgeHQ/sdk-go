@@ -8,7 +8,6 @@ import (
 	r3sse "github.com/r3labs/sse/v2"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/ReforgeHQ/sdk-go/internal"
 	"github.com/ReforgeHQ/sdk-go/internal/options"
 	sse "github.com/ReforgeHQ/sdk-go/internal/sse"
 	prefabProto "github.com/ReforgeHQ/sdk-go/proto"
