@@ -30,7 +30,7 @@ type Submitter struct {
 	evaluationSummaryAggregator *EvaluationSummaryAggregator
 	instanceHash                string
 	host                        string
-	sdkKey                      string
+	options                     options.Options
 	mutex                       *sync.Mutex
 	queue                       chan QueueItem
 }
@@ -55,7 +55,7 @@ func NewTelemetrySubmitter(options options.Options) *Submitter {
 	return &Submitter{
 		aggregators:                 aggregators,
 		host:                        options.TelemetryHost,
-		sdkKey:                      options.SdkKey,
+		options:                     options,
 		contextAggregators:          contextAggregators,
 		evaluationSummaryAggregator: evaluationSummaryAggregator,
 		mutex:                       &sync.Mutex{},
@@ -183,7 +183,12 @@ func (ts *Submitter) Submit(waitOnQueueToDrain bool) error {
 	req.Header.Set("Accept", "application/x-protobuf")
 	req.Header.Set("X-Reforge-SDK-Version", internal.ClientVersionHeader)
 
-	encodedAuth := base64.StdEncoding.EncodeToString([]byte("authuser:" + ts.sdkKey))
+	sdkKey, err := ts.options.SdkKeySettingOrEnvVar()
+	if err != nil {
+		return fmt.Errorf("failed to get SDK key: %v", err)
+	}
+
+	encodedAuth := base64.StdEncoding.EncodeToString([]byte("authuser:" + sdkKey))
 	req.Header.Set("Authorization", "Basic "+encodedAuth)
 
 	return ts.retryRequest(req)

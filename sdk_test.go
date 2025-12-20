@@ -2,6 +2,7 @@ package reforge_test
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -166,3 +167,64 @@ func TestGetConfigMatchWithAJSONConfigDumpAndGlobalContext(t *testing.T) {
 	assert.Equal(t, "default", configMatch.OriginalMatch.GetString_())
 	assert.Nil(t, configMatch.EnvId)
 }
+
+func TestSdkKeyNormalizationFromEnvVar(t *testing.T) {
+	// Test that SDK key is properly normalized from env var during NewSdk()
+	// This reproduces the customer bug where NewSdk() without WithSdkKey() didn't get live updates
+
+	// Set env var
+	testKey := "test-sdk-key-from-env"
+	os.Setenv(options.SdkKeyEnvVar, testKey)
+	defer os.Unsetenv(options.SdkKeyEnvVar)
+
+	// Create client without explicitly passing SDK key
+	// Use WithConfigs so we don't need a real API connection
+	configs := map[string]interface{}{
+		"test.key": "test-value",
+	}
+
+	client, err := reforge.NewSdk(
+		reforge.WithConfigs(configs),
+		reforge.WithInitializationTimeoutSeconds(1.0),
+	)
+
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	// Verify the SDK works
+	value, ok, err := client.GetStringValue("test.key", *reforge.NewContextSet())
+	require.NoError(t, err)
+	assert.True(t, ok)
+	assert.Equal(t, "test-value", value)
+}
+
+func TestSdkKeyExplicitTakesPrecedenceOverEnvVar(t *testing.T) {
+	// Verify explicit SDK key takes precedence over env var
+
+	// Set env var
+	envKey := "env-sdk-key"
+	os.Setenv(options.SdkKeyEnvVar, envKey)
+	defer os.Unsetenv(options.SdkKeyEnvVar)
+
+	// Create client with explicit SDK key
+	explicitKey := "explicit-sdk-key"
+	configs := map[string]interface{}{
+		"test.key": "test-value",
+	}
+
+	client, err := reforge.NewSdk(
+		reforge.WithSdkKey(explicitKey),
+		reforge.WithConfigs(configs),
+		reforge.WithInitializationTimeoutSeconds(1.0),
+	)
+
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	// Verify the SDK works
+	value, ok, err := client.GetStringValue("test.key", *reforge.NewContextSet())
+	require.NoError(t, err)
+	assert.True(t, ok)
+	assert.Equal(t, "test-value", value)
+}
+
