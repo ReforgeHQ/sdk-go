@@ -73,6 +73,10 @@ func TestBuildSSEClientWithEnvVar(t *testing.T) {
 		APIURLs: []string{"https://primary.reforge.com"},
 	}
 
+	// Normalize SDK key from env var (mimics what NewSdk() does)
+	_, err := opts.SdkKeySettingOrEnvVar()
+	assert.NoError(t, err)
+
 	client, err := sse.BuildSSEClient(opts)
 
 	assert.NoError(t, err)

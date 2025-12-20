@@ -28,3 +28,4 @@ go.work
 
 # Environment files with sensitive keys
 .envrc
+mise.toml
