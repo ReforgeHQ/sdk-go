@@ -279,12 +279,11 @@ func (c *Client) GetConfigMatch(key string, contextSet ContextSet) (*ConfigMatch
 // Keys returns a list of all keys in the config store
 func (c *Client) Keys() ([]string, error) {
 	if c.awaitInitialization() == timeout {
-		switch c.options.OnInitializationFailure {
-		case ReturnNilMatch:
-			c.closeInitializationCompleteOnce.Do(func() {
-				close(c.initializationComplete)
-			})
-		case ReturnError:
+		c.closeInitializationCompleteOnce.Do(func() {
+			close(c.initializationComplete)
+		})
+
+		if c.options.OnInitializationFailure == ReturnError {
 			return []string{}, errors.New("initialization timeout")
 		}
 	}
@@ -552,12 +551,11 @@ func (c *ContextBoundClient) GetInstanceHash() string {
 
 func (c *Client) internalGetValue(key string, contextSet contexts.ContextSet) (resolutionResult, error) {
 	if c.awaitInitialization() == timeout {
-		switch c.options.OnInitializationFailure {
-		case optionsPkg.ReturnNilMatch:
-			c.closeInitializationCompleteOnce.Do(func() {
-				close(c.initializationComplete)
-			})
-		case optionsPkg.ReturnError:
+		c.closeInitializationCompleteOnce.Do(func() {
+			close(c.initializationComplete)
+		})
+
+		if c.options.OnInitializationFailure == optionsPkg.ReturnError {
 			return resolutionResultError(), errors.New("initialization timeout")
 		}
 	}

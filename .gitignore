@@ -26,6 +26,9 @@ go.work
 # Claude Code directories
 .claude/
 
+# Beads issue tracker (local state)
+.beads
+
 # Environment files with sensitive keys
 .envrc
 mise.toml
